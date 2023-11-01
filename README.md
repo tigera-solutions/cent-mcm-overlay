@@ -39,6 +39,21 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
   
   ```kubectl create -f manifests/mgmtcluster-custom-resources-example.yaml```
 
+- For ```LogStorage``` , install the EBS CSI driver: [EBS on EKS docs reference](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
+
+- Apply the storage class:
+
+  ```yaml
+    apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    metadata:
+    name: tigera-elasticsearch
+    provisioner: ebs.csi.aws.com
+    reclaimPolicy: Retain
+    allowVolumeExpansion: true
+    volumeBindingMode: WaitForFirstConsumer
+  ```
+
 - Add nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-1.yaml``` file:
   
   ```eksctl create nodegroup --cluster <cluster_name> --region <region> --node-type <node_type> --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 2```
