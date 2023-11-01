@@ -6,8 +6,9 @@ For reference, this uses the nightly build [here](https://2023-10-12-master-swag
 
 ## Notes
 
-- There will need to be two EKS clusters, this is done in different regions with VPC peering for the nodes.
+- There will need to be two EKS clusters running Calico CNI, this is done in different regions with VPC peering to peer the node CIDRs.
 - VPC CIDRs for each cluster will need to be unique to allow peering to happen, and pod cidrs and svc cidrs also need to be unique for each cluster. This is set in the eksctl config file and the Calico custom resources config file respectively.
+- [Next doc for clustermesh](https://docs.tigera.io/calico-enterprise/next/multicluster/federation/kubeconfig)
 
 ## Steps
 
