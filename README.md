@@ -176,10 +176,19 @@ calicoq eval "all()"
 
   ```bash
   (Lots of remote endpoints)
-  Workload endpoint calico-demo-remote-canadacentral/aks-nodepool1-86764462-vmss000000/k8s/redis.demo-clusterb-services-rigger-d45c6c4-cp4g8/eth0
-  Workload endpoint calico-demo-remote-canadacentral/aks-nodepool1-86764462-vmss000000/k8s/redis.demo-clusterb-1/eth0
-  Workload endpoint calico-demo-remote-canadacentral/aks-nodepool1-86764462-vmss000001/k8s/redis.demo-clusterb-0/eth0
-  Workload endpoint calico-demo-remote-canadacentral/aks-nodepool1-86764462-vmss000002/k8s/redis.demo-clusterb-2/eth0
+  Workload endpoint ip-192-168-0-42.ca-central-1.compute.internal/k8s/tigera-policy-recommendation.tigera-policy-recommendation-575f55bcbd-n6x7k/eth0
+  Workload endpoint calico-demo-remote-us-east-1/ip-10-10-0-23.ec2.internal/k8s/cartservice.cartservice-74b9768648-s8vwb/eth0
+  Workload endpoint ip-192-168-0-80.ca-central-1.compute.internal/k8s/tigera-elasticsearch.tigera-linseed-75c5ffdf49-x6snw/eth0
+  Workload endpoint ip-192-168-0-42.ca-central-1.compute.internal/k8s/tigera-prometheus.calico-prometheus-operator-75c5f765-9j4m4/eth0
+  Workload endpoint calico-demo-remote-us-east-1/ip-10-10-0-23.ec2.internal/k8s/tigera-compliance.compliance-snapshotter-6cd6c76486-bmtkm/eth0
+  Workload endpoint ip-192-168-0-42.ca-central-1.compute.internal/k8s/kube-system.ebs-csi-controller-f9566dbd6-6wpbw/eth0
+  Workload endpoint calico-demo-remote-us-east-1/ip-10-10-0-23.ec2.internal/k8s/dev.dev-nginx-789ddfc8db-6dkms/eth0
+  Workload endpoint ip-192-168-0-80.ca-central-1.compute.internal/k8s/tigera-compliance.compliance-benchmarker-zjknl/eth0
+  Workload endpoint calico-demo-remote-us-east-1/ip-10-10-0-23.ec2.internal/k8s/calico-system.calico-kube-controllers-77ffffd989-klpzv/eth0
+  Workload endpoint ip-192-168-0-42.ca-central-1.compute.internal/k8s/kube-system.ebs-csi-controller-f9566dbd6-v5cmk/eth0
+  Workload endpoint calico-demo-remote-us-east-1/ip-10-10-0-23.ec2.internal/k8s/tigera-prometheus.prometheus-calico-node-prometheus-0/eth0
+  Workload endpoint ip-192-168-0-42.ca-central-1.compute.internal/k8s/tigera-kibana.tigera-secure-kb-56d99cbdff-lnh92/eth0
+  Workload endpoint ip-192-168-0-42.ca-central-1.compute.internal/k8s/calico-system.csi-node-driver-d6pgr/eth0
   ```
 
 ### MacOS/Windows Users
