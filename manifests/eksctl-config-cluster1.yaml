@@ -1,0 +1,19 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+availabilityZones:
+  - ca-central-1a
+  - ca-central-1d
+
+metadata:
+  name: cc-eks-mcm1
+  region: ca-central-1
+  version: "1.26"
+
+kubernetesNetworkConfig:
+  serviceIPv4CIDR: "172.20.0.0/16"  
+
+vpc:
+  cidr: 192.168.0.0/24
+
+
+nodeGroups: []
