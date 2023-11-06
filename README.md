@@ -18,10 +18,10 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 
 [Reference](https://docs.tigera.io/calico-enterprise/next/getting-started/install-on-clusters/eks#install-eks-with-calico-networking)
 
-- Change the values under ```manifests/eksctl-config-cluster-1.yaml``` as needed. Note the VPC and svc cidrs.
+- Change the values under ```manifests/eksctl-config-cluster1.yaml``` as needed. Note the VPC and svc cidrs.
 
 - Create the cluster:
-  ```eksctl create cluster -f manifests/eksctl-config-cluster-1.yaml```
+  ```eksctl create cluster -f manifests/eksctl-config-cluster1.yaml```
 
 - Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset:
   ```kubectl delete daemonset -n kube-system aws-node```
@@ -67,10 +67,10 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 
 [Reference](https://docs.tigera.io/calico-enterprise/next/getting-started/install-on-clusters/eks#install-eks-with-calico-networking)
 
-- Change the values under ```manifests/eksctl-config-cluster-2.yaml``` as needed. Note the VPC and svc cidrs.
+- Change the values under ```manifests/eksctl-config-cluster2.yaml``` as needed. Note the VPC and svc cidrs.
 
 - Create the cluster:
-  ```eksctl create cluster -f manifests/eksctl-config-cluster-2.yaml```
+  ```eksctl create cluster -f manifests/eksctl-config-cluster2.yaml```
 
 - Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset:
   ```kubectl delete daemonset -n kube-system aws-node```
