@@ -36,6 +36,16 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
   
   ```kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-operator --from-file=.dockerconfigjson=<path/to/pull/secret>```
 
+- For the Prometheus operator, create the pull secret in the tigera-prometheus namespace and then patch the deployment
+
+  ```bash
+  kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-prometheus --from-file=.dockerconfigjson=<path/to/pull/secret>
+  ```
+
+  ```bash
+  kubectl patch deployment -n tigera-prometheus calico-prometheus-operator -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name": "tigera-pull-secret"}]}}}}'
+  ```
+
 - Modify the ```mgmtcluster-custom-resources-example.yaml``` file as needed and apply it.
   
   ```kubectl create -f manifests/mgmtcluster-custom-resources-example.yaml```
@@ -84,6 +94,16 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 - Install the pull secret:
   
   ```kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-operator --from-file=.dockerconfigjson=<path/to/pull/secret>```
+
+- For the Prometheus operator, create the pull secret in the tigera-prometheus namespace and then patch the deployment
+
+  ```bash
+  kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-prometheus --from-file=.dockerconfigjson=<path/to/pull/secret>
+  ```
+
+  ```bash
+  kubectl patch deployment -n tigera-prometheus calico-prometheus-operator -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name": "tigera-pull-secret"}]}}}}'
+  ```
 
 - Modify the ```mgmtcluster-custom-resources-example.yaml``` file as needed and apply it. In this case cluster-2 will be added to cluster-1 as a managed cluster so we omit all necessary components in the resources file, but ensure pod cidr is unique in the ```Installation``` resource.
   
