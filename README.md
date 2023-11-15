@@ -163,7 +163,6 @@ EOF
     address: <address-of-mcm-svc>:<port>
     tls:
       secretName: tigera-management-cluster-connection
-  EOF
   ```
 
   Ensure that the ```tigera-manager``` pods restart, and that the GUI of the mgmt. cluster shows the ```management-cluster``` in the right drop-down when the GUI svc comes back:
