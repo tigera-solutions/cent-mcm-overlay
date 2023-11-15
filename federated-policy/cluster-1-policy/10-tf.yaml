@@ -1,0 +1,34 @@
+kind: GlobalThreatFeed
+apiVersion: projectcalico.org/v3
+metadata:
+  name: alienvault.ipthreatfeeds
+spec:
+  content: IPSet
+  mode: Enabled
+  description: AlienVault IP Block List
+  feedType: Builtin
+  globalNetworkSet:
+    labels:
+      feed: otx-ipthreatfeed
+  pull:
+    http:
+      format: {}
+      url: 'https://installer.calicocloud.io/feeds/v1/ips'
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: security.block-alienvault-ipthreatfeed
+spec:
+  tier: security
+  order: -90
+  selector: all()
+  namespaceSelector: ''
+  serviceAccountSelector: ''
+  egress:
+    - action: Deny
+      source: {}
+      destination:
+        selector: feed == "otx-ipthreatfeed"
+  types:
+    - Egress

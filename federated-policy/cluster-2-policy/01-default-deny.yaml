@@ -1,0 +1,11 @@
+apiVersion: projectcalico.org/v3
+kind: StagedGlobalNetworkPolicy
+metadata:
+  name: default.default-deny
+spec:
+  tier: default
+  order: 10000
+  selector: zone == "app2" || zone == "shared"
+  types:
+  - Ingress
+  - Egress

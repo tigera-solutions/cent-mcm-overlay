@@ -52,18 +52,41 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 
 - For ```LogStorage``` , install the EBS CSI driver: [EBS on EKS docs reference](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
 
+  One quick way of doing this is with using your AWS access key id and secret access key to create the ```Secret``` object for the EBS CSI controller:
+  
+  Export the vars:
+
+  ```bash
+  export AWS_ACCESS_KEY_ID=<my-access-key-id>
+  export AWS_SECRET_ACCESS_KEY=<my-secret-access-key>
+  ```
+
+  Configure the aws-secret:
+  
+  ```bash
+  kubectl create secret generic aws-secret --namespace kube-system --from-literal "key_id=${AWS_ACCESS_KEY_ID}" --from-literal "access_key=${AWS_SECRET_ACCESS_KEY}"
+  ```
+
+  Install the CSI driver:
+
+  ```bash
+  kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.20"
+  ```
+
 - Apply the storage class:
 
-  ```yaml
-    apiVersion: storage.k8s.io/v1
-    kind: StorageClass
-    metadata:
-    name: tigera-elasticsearch
-    provisioner: ebs.csi.aws.com
-    reclaimPolicy: Retain
-    allowVolumeExpansion: true
-    volumeBindingMode: WaitForFirstConsumer
-  ```
+```bash
+kubectl apply -f - <<-EOF
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: tigera-elasticsearch
+provisioner: ebs.csi.aws.com
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+EOF
+```
 
 - Add nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-1.yaml``` file:
   
@@ -71,7 +94,11 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 
 - Monitor progress with ```kubectl get tigerastatus``` and once ```apiserver``` status shows ```Available```, install the license file.
 
-- Once the rest of the cluster comes up, configure access to the manager UI with the docs [here](https://docs.tigera.io/calico-enterprise/next/operations/cnx/access-the-manager)
+- Create a ```LoadBalancer``` service for the ```tigera-manager``` pods to access from your machine:
+
+  ```kubectl create -f manifests/mgmt-cluster-lb.yaml```
+
+- Once the rest of the cluster comes up, configure user access to the manager UI with the docs [here](https://docs.tigera.io/calico-enterprise/next/operations/cnx/access-the-manager)
 
 ### Cluster-2 setup with ```eksctl```
 
@@ -105,9 +132,9 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
   kubectl patch deployment -n tigera-prometheus calico-prometheus-operator -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name": "tigera-pull-secret"}]}}}}'
   ```
 
-- Modify the ```mgmtcluster-custom-resources-example.yaml``` file as needed and apply it. In this case cluster-2 will be added to cluster-1 as a managed cluster so we omit all necessary components in the resources file, but ensure pod cidr is unique in the ```Installation``` resource.
+- Modify the ```managedcluster-custom-resources-example.yaml``` file as needed and apply it. In this case cluster-2 will be added to cluster-1 as a managed cluster so we omit all necessary components in the resources file, but ensure pod cidr is unique in the ```Installation``` resource.
   
-  ```kubectl create -f manifests/mgmtcluster-custom-resources-example.yaml```
+  ```kubectl create -f manifests/managedcluster-custom-resources-example.yaml```
 
 - Add nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-2.yaml``` file:
   
@@ -118,6 +145,28 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 ## MCM setup
 
 - Create the mgmt cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/create-a-management-cluster)
+
+  An example of using another ```LoadBalancer``` svc to expose the MCM ```targetport``` of 9449 and using that for the managed cluster to access is at ```manifests/mcm-svc-lb.yaml```:
+
+  ```kubectl create -f manifests/mcm-svc-lb.yaml```
+
+  If you prefer to use NodePort or Ingress type svc you can, but it is outside the scope of this README. Refer to the docs above.
+
+  The nightly build we're using has an [issue](https://github.com/tigera/operator/pull/2948) with creating the ```ManagementClusterCR``` as per the docs manifest, fixed in a subsequent build. However, for this build we need to implement the following workaround when we get to the step to apply the ```ManagementClusterCR```. The spec should have the ```.spec.tls.secretName``` set to ```tigera-management-cluster-connection``` , like so (replace ```.spec.address``` with your relevant svc URL and port):
+
+  ```yaml
+  apiVersion: operator.tigera.io/v1
+  kind: ManagementCluster
+  metadata:
+    name: tigera-secure
+  spec:
+    address: <address-of-mcm-svc>:<port>
+    tls:
+      secretName: tigera-management-cluster-connection
+  EOF
+  ```
+
+  Ensure that the ```tigera-manager``` pods restart, and that the GUI of the mgmt. cluster shows the ```management-cluster``` in the right drop-down when the GUI svc comes back:
   
 - Create the managed cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/create-a-managed-cluster#create-the-connection-manifest-for-your-managed-cluster)
 
@@ -254,7 +303,7 @@ chroot /host
 
 ```bash
 cd /usr/local/bin
-curl -o calicoq -O -L https://downloads.tigera.io/ee/binaries/v3.15.1/calicoq
+curl -o calicoq -O -L https://downloads.tigera.io/ee/binaries/v3.18.0-1.1/calicoq
 chmod +x calicoq
 ```
 

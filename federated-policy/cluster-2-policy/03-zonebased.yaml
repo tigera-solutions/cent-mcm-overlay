@@ -1,0 +1,78 @@
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: platform.app2
+spec:
+  tier: platform
+  order: 75
+  selector: zone == "app2"
+  namespaceSelector: ''
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      source:
+        selector: zone == "app2" || zone == "shared"
+      destination: {}
+  egress:
+    - action: Allow
+      source: {}
+      destination:
+        selector: zone == "app2" || zone == "shared"
+  doNotTrack: false
+  applyOnForward: false
+  preDNAT: false
+  types:
+    - Ingress
+    - Egress
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: platform.shared
+spec:
+  tier: platform
+  order: 75
+  selector: zone == "shared"
+  namespaceSelector: ''
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      source:
+        selector: zone == "app1" || zone == "app2" || zone == "shared"
+      destination: {}
+  egress:
+    - action: Allow
+      source: {}
+      destination:
+        selector: zone == "app1" || zone == "app2" || zone == "shared"
+  doNotTrack: false
+  applyOnForward: false
+  preDNAT: false
+  types:
+    - Ingress
+    - Egress
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: platform.platform-default-pass
+spec:
+  tier: platform
+  order: 10000
+  selector: ""
+  namespaceSelector: ""
+  serviceAccountSelector: ""
+  ingress:
+    - action: Pass
+      source: {}
+      destination: {}
+  egress:
+    - action: Pass
+      source: {}
+      destination: {}
+  doNotTrack: false
+  applyOnForward: false
+  preDNAT: false
+  types:
+    - Ingress
+    - Egress
