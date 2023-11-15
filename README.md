@@ -335,7 +335,7 @@ NODE_NAME=$(kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=
 - Spin up a debug privileged pod
 
 ```bash
-kubectl debug node/$NODE_NAME -it --image=mcr.microsoft.com/aks/fundamental/base-ubuntu:v0.0.11
+kubectl debug node/$NODE_NAME -it --image=ubuntu
 ```
 
 - In the pod, get to host namespace as root
@@ -352,10 +352,11 @@ curl -o calicoq -O -L https://downloads.tigera.io/ee/binaries/v3.18.0-1.1/calico
 chmod +x calicoq
 ```
 
-- Create the config file for it
+- Make the Calico dir (if it doesn't exist) and create the config file for it
 
 ```bash
-vi /etc/calico/calicoctl.cfg
+mkdir -p /etc/calico
+vi /etc/calico/calicoq.cfg
 ```
 
 Paste in the following:
@@ -372,7 +373,7 @@ spec:
 - Create the /.kube/config file, put your config file into it
 
 ```bash
-mkdir /.kube
+mkdir -p /.kube
 vi /.kube/config
 ```
 
