@@ -194,18 +194,24 @@ EOF
 
   The nightly build we're using has an [issue](https://github.com/tigera/operator/pull/2948) with creating the ```ManagementClusterCR``` as per the docs manifest, fixed in a subsequent build. However, for this build we need to implement the following workaround when we get to the step to apply the ```ManagementClusterCR```. The spec should have the ```.spec.tls.secretName``` set to ```tigera-management-cluster-connection``` , like so (replace ```.spec.address``` with your relevant svc URL and port):
 
-  ```yaml
-  apiVersion: operator.tigera.io/v1
-  kind: ManagementCluster
-  metadata:
-    name: tigera-secure
-  spec:
-    address: <address-of-mcm-svc>:<port>
-    tls:
-      secretName: tigera-management-cluster-connection
+  ```bash
+  export MGMT_ADDRESS=<address-of-mcm-svc>:<port>
   ```
 
-  Ensure that the ```tigera-manager``` pods restart, and that the GUI of the mgmt. cluster shows the ```management-cluster``` in the right drop-down when the GUI svc comes back:
+```bash
+kubectl apply -f - <<-EOF
+apiVersion: operator.tigera.io/v1
+kind: ManagementCluster
+metadata:
+  name: tigera-secure
+spec:
+  address: $MGMT_ADDRESS
+  tls:
+    secretName: tigera-management-cluster-connection
+EOF
+```
+
+  Ensure that the ```tigera-manager``` and ```tigera-linseed``` pods restart, and that the GUI of the mgmt. cluster shows the ```management-cluster``` in the right drop-down when the GUI svc comes back:
   
 - Create the managed cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/create-a-managed-cluster#create-the-connection-manifest-for-your-managed-cluster)
 
