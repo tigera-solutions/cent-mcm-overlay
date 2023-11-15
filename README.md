@@ -21,20 +21,34 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 - Change the values under ```manifests/eksctl-config-cluster1.yaml``` as needed. Note the VPC and svc cidrs.
 
 - Create the cluster:
-  ```eksctl create cluster -f manifests/eksctl-config-cluster1.yaml```
+
+  ```bash
+  eksctl create cluster -f manifests/eksctl-config-cluster1.yaml
+  ```
 
 - Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset:
-  ```kubectl delete daemonset -n kube-system aws-node```
+  
+  ```bash
+  kubectl delete daemonset -n kube-system aws-node
+  ```
 
 - Apply the operator and prometheus manifests from the repo:
-  ```kubectl create -f manifests/tigera-operator.yaml```
-  ```kubectl create -f manifests/tigera-prometheus-operator.yaml```
+
+  ```bash
+  kubectl create -f manifests/tigera-operator.yaml
+  ```
+
+  ```bash
+  kubectl create -f manifests/tigera-prometheus-operator.yaml
+  ```
 
 - Get a pull secret: The nightly build uses the GCR images, so you'll need a gcr.io pull secret. [This doc](https://tigera.atlassian.net/wiki/spaces/ENG/pages/456589334/Pull+Secrets+for+GCR) has options on how to get one.
 
 - Install the pull secret:
   
-  ```kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-operator --from-file=.dockerconfigjson=<path/to/pull/secret>```
+  ```bash
+  kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-operator --from-file=.dockerconfigjson=<path/to/pull/secret>
+  ```
 
 - For the Prometheus operator, create the pull secret in the tigera-prometheus namespace and then patch the deployment
 
@@ -48,7 +62,9 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 
 - Modify the ```mgmtcluster-custom-resources-example.yaml``` file as needed and apply it.
   
-  ```kubectl create -f manifests/mgmtcluster-custom-resources-example.yaml```
+  ```bash
+  kubectl create -f manifests/mgmtcluster-custom-resources-example.yaml
+  ```
 
 - For ```LogStorage``` , install the EBS CSI driver: [EBS on EKS docs reference](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
 
@@ -90,13 +106,17 @@ EOF
 
 - Add nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-1.yaml``` file:
   
-  ```eksctl create nodegroup --cluster <cluster_name> --region <region> --node-type <node_type> --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 2```
+  ```bash
+  eksctl create nodegroup --cluster <cluster_name> --region <region> --node-type <node_type> --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 2
+  ```
 
 - Monitor progress with ```kubectl get tigerastatus``` and once ```apiserver``` status shows ```Available```, install the license file.
 
 - Create a ```LoadBalancer``` service for the ```tigera-manager``` pods to access from your machine:
 
-  ```kubectl create -f manifests/mgmt-cluster-lb.yaml```
+  ```bash
+  kubectl create -f manifests/mgmt-cluster-lb.yaml
+  ```
 
 - Once the rest of the cluster comes up, configure user access to the manager UI with the docs [here](https://docs.tigera.io/calico-enterprise/next/operations/cnx/access-the-manager)
 
@@ -107,20 +127,34 @@ EOF
 - Change the values under ```manifests/eksctl-config-cluster2.yaml``` as needed. Note the VPC and svc cidrs.
 
 - Create the cluster:
-  ```eksctl create cluster -f manifests/eksctl-config-cluster2.yaml```
+
+  ```bash
+  eksctl create cluster -f manifests/eksctl-config-cluster2.yaml
+  ```
 
 - Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset:
-  ```kubectl delete daemonset -n kube-system aws-node```
+
+  ```bash
+  kubectl delete daemonset -n kube-system aws-node
+  ```
 
 - Apply the operator and prometheus manifests from the repo:
-  ```kubectl create -f manifests/tigera-operator.yaml```
-  ```kubectl create -f manifests/tigera-prometheus-operator.yaml```
+
+  ```bash
+  kubectl create -f manifests/tigera-operator.yaml
+  ```
+
+  ```bash
+  kubectl create -f manifests/tigera-prometheus-operator.yaml
+  ```
 
 - Get a pull secret: The nightly build uses the GCR images, so you'll need a gcr.io pull secret. [This doc](https://tigera.atlassian.net/wiki/spaces/ENG/pages/456589334/Pull+Secrets+for+GCR) has options on how to get one.
 
 - Install the pull secret:
   
-  ```kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-operator --from-file=.dockerconfigjson=<path/to/pull/secret>```
+  ```bash
+  kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-operator --from-file=.dockerconfigjson=<path/to/pull/secret>
+  ```
 
 - For the Prometheus operator, create the pull secret in the tigera-prometheus namespace and then patch the deployment
 
@@ -134,11 +168,15 @@ EOF
 
 - Modify the ```managedcluster-custom-resources-example.yaml``` file as needed and apply it. In this case cluster-2 will be added to cluster-1 as a managed cluster so we omit all necessary components in the resources file, but ensure pod cidr is unique in the ```Installation``` resource.
   
-  ```kubectl create -f manifests/managedcluster-custom-resources-example.yaml```
+  ```bash
+  kubectl create -f manifests/managedcluster-custom-resources-example.yaml
+  ```
 
 - Add nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-2.yaml``` file:
   
-  ```eksctl create nodegroup --cluster <cluster_name> --region <region> --node-type <node_type> --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 2```
+  ```bash
+  eksctl create nodegroup --cluster <cluster_name> --region <region> --node-type <node_type> --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 2
+  ```
 
 - Monitor progress with ```kubectl get tigerastatus``` and once ```apiserver``` status shows ```Available```, install the license file.
 
@@ -148,7 +186,9 @@ EOF
 
   An example of using another ```LoadBalancer``` svc to expose the MCM ```targetport``` of 9449 and using that for the managed cluster to access is at ```manifests/mcm-svc-lb.yaml```:
 
-  ```kubectl create -f manifests/mcm-svc-lb.yaml```
+  ```bash
+  kubectl create -f manifests/mcm-svc-lb.yaml
+  ```
 
   If you prefer to use NodePort or Ingress type svc you can, but it is outside the scope of this README. Refer to the docs above.
 
