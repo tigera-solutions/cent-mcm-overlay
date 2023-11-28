@@ -7,7 +7,7 @@ availabilityZones:
 metadata:
   name: cc-eks-mcm2
   region: us-east-1
-  version: "1.26"
+  version: "1.27"
 
 kubernetesNetworkConfig:
   serviceIPv4CIDR: "172.21.0.0/16"  
