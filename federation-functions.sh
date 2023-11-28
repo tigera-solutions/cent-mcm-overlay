@@ -18,8 +18,10 @@ apply_rbac () {
     if [[ "$RESULT" -eq 1 ]]; then
       echo "Your K8s version is $KUBE_VERSION which is >1.24.0 so we install SA secret manually"
       kubectl apply -f $SCRIPT_DIR/manifests/federation-remote-secret.yaml
+      echo
     else
       echo "Your K8s version is $KUBE_VERSION which is <1.24.0 so we don't need to install SA secret manually"
+      echo
     fi
   done
 }
@@ -79,7 +81,9 @@ EOF
     fi
     echo "Test cluster kubeconfig for ${REGIONS[i]}"
     echo "Both kubectl get nodes and kubectl get svcs should output the necessary list of nodes and svcs"
+    echo "Output of kubectl get nodes:"
     kubectl --kubeconfig $SCRIPT_DIR/manifests/_output/calico-demo-${REGIONS[i]}-kubeconfig get nodes
+    echo "Output of kubectl get services:"
     kubectl --kubeconfig $SCRIPT_DIR/manifests/_output/calico-demo-${REGIONS[i]}-kubeconfig get services
     echo
   done
