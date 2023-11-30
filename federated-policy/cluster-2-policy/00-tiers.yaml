@@ -11,3 +11,10 @@ metadata:
   name: security
 spec:
   order: 100
+---
+apiVersion: projectcalico.org/v3
+kind: Tier
+metadata:
+  name: apps-msg
+spec:
+  order: 300
