@@ -411,7 +411,6 @@ calicoq eval "all()"
 
 > :warning: **Someday I'll automate this with Terraform or something**
 
-
 ## Demo Env Prep
 
 - Deploy the different application stacks on the clusters as below:
@@ -494,7 +493,6 @@ calicoq eval "all()"
   shippingservice-8957d5b7b-wxsfg          shippingservice         172.17.64.18     map[app:shippingservice pod-template-hash:8957d5b7b zone:app2]
   ```
 
-
 ## Testing cross-cluster pod-to-pod communication
 
 Here we will run some traffic flow tests by doing ```kubectl exec``` into pods
@@ -524,7 +522,7 @@ Here we will run some traffic flow tests by doing ```kubectl exec``` into pods
     kubectl -n client exec -it $(kubectl get po -n client -l role=client -ojsonpath='{.items[0].metadata.name}')  -- /bin/bash -c 'curl -m3 -I http://<frontend-endpoint-ip>:<port>'
     ```
 
-    You should get a successful response from the ```frontend``` pod in cluster-2 like so: 
+    You should get a successful response from the ```frontend``` pod in cluster-2 like so:
 
     ```bash
     HTTP/1.1 200 OK
