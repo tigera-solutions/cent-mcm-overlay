@@ -281,6 +281,8 @@ aws ec2 create-route --region us-east-1 --route-table-id $ROUTE_ID_CB --destinat
 
 [Reference doc](https://docs.tigera.io/calico-enterprise/next/multicluster/federation/kubeconfig)
 
+- Copy ```setup.env.example``` to ```setup.env``` and edit the values for the regions and contexts as needed.
+
 - In the ```setup.env``` , add the cluster context names and regions of both the clusters as the federation install script will switch contexts and run the commands using kubectl.
 
 - Run the script from the root dir:
@@ -396,7 +398,7 @@ calicoq eval "all()"
   Workload endpoint calico-demo-remote-us-east-1/ip-10-10-0-23.ec2.internal/k8s/dev.dev-nginx-789ddfc8db-6dkms/eth0
   ```
 
-## Verify pod-to-pod connectivity
+## Verify IP routes to remote clusters
 
 - First, get a debug privileged pod and check the routes on one of the worker nodes, there should be routes for the other cluster's pod cidr with the ```vxlan.calico``` interface
 
