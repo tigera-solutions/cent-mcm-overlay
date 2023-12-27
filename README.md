@@ -285,7 +285,7 @@ aws ec2 create-route --region us-east-1 --route-table-id $ROUTE_ID_CB --destinat
 
 - In the ```setup.env``` , add the cluster context names and regions of both the clusters as the federation install script will switch contexts and run the commands using kubectl.
 
-- Run the script from the root dir:
+- Run the script from this repo's root dir:
 
 ```bash
 ./install-federation-overlay.sh
