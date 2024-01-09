@@ -2,13 +2,13 @@
 
 > :warning: **This repo is purely a work-in-progress(WIP) and is in active development. Other than contributors, anyone else should probably not try the stuff in this repo and expect it to work as is until it's finished and ready!**
 
-For reference, this uses the nightly build [here](https://2023-10-12-master-swagger.docs.eng.tigera.net/manifests/) for the files that are in the ```manifests``` folder.
+We will be using the Calico Enterprise early preview version v3.18.0-2.0 as per the docs [here](https://docs.tigera.io/calico-enterprise/3.18/getting-started/install-on-clusters/eks#install-eks-with-calico-networking)
 
 ## Notes
 
 - There will need to be two EKS clusters running Calico CNI, this is done in different regions with VPC peering to peer the node CIDRs.
 - VPC CIDRs for each cluster will need to be unique to allow peering to happen, and pod cidrs and svc cidrs also need to be unique for each cluster. This is set in the eksctl config file and the Calico custom resources config file respectively.
-- [Next doc for clustermesh](https://docs.tigera.io/calico-enterprise/next/multicluster/federation/kubeconfig)
+- [Next doc for clustermesh](https://docs.tigera.io/calico-enterprise/3.18/multicluster/federation/kubeconfig)
 
 ## Steps
 
@@ -35,14 +35,16 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 - Apply the operator and prometheus manifests from the repo:
 
   ```bash
-  kubectl create -f manifests/tigera-operator.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.18.0-2.0/manifests/tigera-operator.yaml
   ```
 
   ```bash
-  kubectl create -f manifests/tigera-prometheus-operator.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.18.0-2.0/manifests/tigera-prometheus-operator.yaml
   ```
 
-- Get a pull secret: The nightly build uses the GCR images, so you'll need a gcr.io pull secret. [This doc](https://tigera.atlassian.net/wiki/spaces/ENG/pages/456589334/Pull+Secrets+for+GCR) has options on how to get one.
+- Get a pull secret: The official build uses the quay.io images, so you'll need a pull secret. [This doc](https://tigera.atlassian.net/wiki/spaces/CS/pages/623575278/Creating+Pull+secrets+and+License+files+for+PoC+s) has options on how to generate one as per the official POC/testing process.
+
+> :warning: **Please make sure to delete pull secrets after testing or if not being used by an active/paying customer or an active POC**
 
 - Install the pull secret:
   
@@ -141,14 +143,14 @@ EOF
 - Apply the operator and prometheus manifests from the repo:
 
   ```bash
-  kubectl create -f manifests/tigera-operator.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.18.0-2.0/manifests/tigera-operator.yaml
   ```
 
   ```bash
-  kubectl create -f manifests/tigera-prometheus-operator.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.18.0-2.0/manifests/tigera-prometheus-operator.yaml
   ```
 
-- Get a pull secret: The nightly build uses the GCR images, so you'll need a gcr.io pull secret. [This doc](https://tigera.atlassian.net/wiki/spaces/ENG/pages/456589334/Pull+Secrets+for+GCR) has options on how to get one.
+- Get a pull secret: The official build uses the quay.io images, so you'll need a pull secret. [This doc](https://tigera.atlassian.net/wiki/spaces/CS/pages/623575278/Creating+Pull+secrets+and+License+files+for+PoC+s) has options on how to generate one as per the official POC/testing process.
 
 - Install the pull secret:
   
@@ -192,8 +194,8 @@ EOF
 
   If you prefer to use NodePort or Ingress type svc you can, but it is outside the scope of this README. Refer to the docs above.
 
-  The nightly build we're using has an [issue](https://github.com/tigera/operator/pull/2948) with creating the ```ManagementClusterCR``` as per the docs manifest, fixed in a subsequent build. However, for this build we need to implement the following workaround when we get to the step to apply the ```ManagementClusterCR```. The spec should have the ```.spec.tls.secretName``` set to ```tigera-management-cluster-connection``` , like so (replace ```.spec.address``` with your relevant svc URL and port):
-
+  The latest nightly build before v3.18.0-2.0 release had an [issue](https://github.com/tigera/operator/pull/2948) with creating the ```ManagementClusterCR``` as per the docs manifest. The workaround here is kept just for historical purpose. When we get to the step to apply the ```ManagementClusterCR```, change the spec to have the ```.spec.tls.secretName``` set to ```tigera-management-cluster-connection``` , like so (replace ```.spec.address``` with your relevant svc URL and port):
+  
   ```bash
   export MGMT_ADDRESS=<address-of-mcm-svc>:<port>
   ```
@@ -211,7 +213,7 @@ spec:
 EOF
 ```
 
-  Ensure that the ```tigera-manager``` and ```tigera-linseed``` pods restart, and that the GUI of the mgmt. cluster shows the ```management-cluster``` in the right drop-down when the GUI svc comes back:
+  Ensure that the ```tigera-manager``` and ```tigera-linseed``` pods restart, and that the GUI of the mgmt. cluster shows the ```management-cluster``` in the right drop-down when the GUI svc comes back.
   
 - Create the managed cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/create-a-managed-cluster#create-the-connection-manifest-for-your-managed-cluster)
 
