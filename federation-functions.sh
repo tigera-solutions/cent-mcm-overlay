@@ -13,7 +13,7 @@ apply_rbac () {
     echo "Creating remote RBAC and federation SA"
     kubectl apply -f $SCRIPT_DIR/manifests/federation-rem-rbac-kdd.yaml
     kubectl apply -f $SCRIPT_DIR/manifests/federation-remote-sa.yaml
-    KUBE_VERSION=$( kubectl version --short 2>&1 | grep Server | cut -d':' -f2 | sed 's/ //g' | sed 's/^.//' )
+    KUBE_VERSION=$( kubectl version 2>&1 | grep Server | cut -d':' -f2 | sed 's/ //g' | sed 's/^.//' )
     RESULT=$(awk -v a="$KUBE_VERSION" -v b=1.24.0 'BEGIN{print(a>=b)}')
     if [[ "$RESULT" -eq 1 ]]; then
       echo "Your K8s version is $KUBE_VERSION which is >1.24.0 so we install SA secret manually"
@@ -54,7 +54,7 @@ contexts:
     user: tigera-federation-remote-cluster
 current-context: tigera-federation-remote-cluster-ctx
 EOF
-    KUBE_VERSION=$( kubectl version --short 2>&1 | grep Server | cut -d':' -f2 | sed 's/ //g' | sed 's/^.//' )
+    KUBE_VERSION=$( kubectl version 2>&1 | grep Server | cut -d':' -f2 | sed 's/ //g' | sed 's/^.//' )
     RESULT=$(awk -v a="$KUBE_VERSION" -v b=1.24.0 'BEGIN{print(a>=b)}')
     if [[ "$RESULT" -eq 1 ]]; then
       YOUR_SERVICE_ACCOUNT_TOKEN=$(kubectl get secret tigera-federation-remote-cluster -n kube-system -o go-template='{{.data.token|base64decode}}')
@@ -214,7 +214,7 @@ delete_rbac () {
     kubectl config use-context ${K8S_CONTEXTS[i]}
     # Delete RBAC and remote service accounts in each site
     echo "Deleting remote RBAC and federation SA"
-    KUBE_VERSION=$( kubectl version --short 2>&1 | grep Server | cut -d':' -f2 | sed 's/ //g' | sed 's/^.//' )
+    KUBE_VERSION=$( kubectl version 2>&1 | grep Server | cut -d':' -f2 | sed 's/ //g' | sed 's/^.//' )
     RESULT=$(awk -v a="$KUBE_VERSION" -v b=1.24.0 'BEGIN{print(a>=b)}')
     if [[ "$RESULT" -eq 1 ]]; then
       echo "Your K8s version is $KUBE_VERSION which is >1.24.0 so we delete SA secret manually"
