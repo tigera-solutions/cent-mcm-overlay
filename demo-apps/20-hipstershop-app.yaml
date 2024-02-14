@@ -627,6 +627,24 @@ spec:
             cpu: 500m
             memory: 512Mi
 ---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: netshoot
+  namespace: loadgenerator
+  labels:
+    app: netshoot
+    zone: app2
+spec:
+  containers:
+  - image: nicolaka/netshoot
+    command:
+      - sleep
+      - infinity
+    imagePullPolicy: IfNotPresent
+    name: netshoot
+  restartPolicy: Always
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
