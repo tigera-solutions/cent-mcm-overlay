@@ -430,6 +430,7 @@ calicoq eval "all()"
   Cluster-2:
 
   ```bash
+  kubectl create -f demo-apps/00-namespaces.yaml
   kubectl create -f demo-apps/20-hipstershop-app.yaml
   kubectl create -f demo-apps/30-dev-app.yaml
   kubectl create -f demo-apps/40-nginx-deploy.yaml
