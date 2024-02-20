@@ -579,6 +579,9 @@ Here we will run some traffic flow tests by doing ```kubectl exec``` into pods
 
 In this demo, we will be enforcing the following network policy posture:
 
+
+![zones_png](https://github.com/tigera-solutions/cent-mcm-overlay/assets/117195889/ac4f78dc-218d-4ee8-9b2e-26d44911fcca)
+
 - On cluster-1, apply the policies:
   
   ```kubectl create -f federated-policy/cluster-1-policy```
