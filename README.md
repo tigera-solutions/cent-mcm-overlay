@@ -574,3 +574,18 @@ Here we will run some traffic flow tests by doing ```kubectl exec``` into pods
     ```
 
 ## Testing Federated Endpoint Policy
+
+### Overview
+
+In this demo, we will be enforcing the following network policy posture:
+
+- On cluster-1, apply the policies:
+  
+  ```kubectl create -f federated-policy/cluster-1-policy```
+
+- On cluster-2, apply the policies:
+
+  ```kubectl create -f federated-policy/cluster-2-policy```
+
+- Check the policy board and enforce the ```default-deny``` staged policy.
+
