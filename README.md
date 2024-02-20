@@ -32,6 +32,12 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
   kubectl delete daemonset -n kube-system aws-node
   ```
 
+- Next, decide if you want to install Calico Enterprise mgmt. plane on this cluster or if you want to connect the cluster to Calico Cloud.
+
+#### Calico Enterprise Installation Steps
+
+> :warning: **Ignore this section if going the Calico Cloud route, refer to the next section for those steps**
+
 - Apply the operator and prometheus manifests from the repo:
 
   ```bash
@@ -106,13 +112,37 @@ volumeBindingMode: WaitForFirstConsumer
 EOF
 ```
 
-- Add nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-1.yaml``` file:
+#### Calico Cloud Installation Steps
+
+> :warning: **Ignore this section if going the Calico Enterprise route, refer to the previous section for those steps**
+
+There needs to be a CNI present on the cluster before we connect it to Calico Cloud, so we will first install Calico OSS CNI on the cluster:
+
+- Install the operator:
+
+  ```kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.2/manifests/tigera-operator.yaml```
+
+- Modify the the Calico Installation CR as needed with the correct pod CIDR, then install it for cluster-1:
+  
+  ```kubectl create -f manifests/cc-cluster-1-calico-installation.yaml```
+
+### Adding worker nodes to the cluster
+
+Regardless of whether Calico Enterprise was installed on the cluster, or Calico OSS CNI was installed on the cluster, worker nodes and the nodegroup need to be added to the cluster:
+
+- Add worker nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-1.yaml``` file:
   
   ```bash
   eksctl create nodegroup --cluster <cluster_name> --region <region> --node-type <node_type> --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 2
   ```
 
-- Monitor progress with ```kubectl get tigerastatus``` and once ```apiserver``` status shows ```Available```, install the license file.
+- Monitor progress with ```kubectl get tigerastatus``` and once ```apiserver``` status shows ```Available```, proceed to the next steps depending on whether you installed Calico Enterprise or intend to join the cluster to Calico Cloud.
+
+#### Calico Enterprise Additional Steps
+
+> :warning: **Ignore this section if going the Calico Cloud route, refer to the next section for those steps**
+
+- Install the license file.
 
 - Create a ```LoadBalancer``` service for the ```tigera-manager``` pods to access from your machine:
 
@@ -121,6 +151,14 @@ EOF
   ```
 
 - Once the rest of the cluster comes up, configure user access to the manager UI with the docs [here](https://docs.tigera.io/calico-enterprise/next/operations/cnx/access-the-manager)
+
+#### Calico Cloud Additional Steps
+
+> :warning: **Ignore this section if going the Calico Enterprise route, refer to the previous section for those steps**
+
+- Now that worker nodes are added, we are ready to join the cluster to Calico Cloud
+
+- [Connect a cluster to Calico Cloud](https://docs.tigera.io/calico-cloud/get-started/connect/install-cluster)
 
 ### Cluster-2 setup with ```eksctl```
 
@@ -139,6 +177,10 @@ EOF
   ```bash
   kubectl delete daemonset -n kube-system aws-node
   ```
+
+#### Calico Enterprise Installation Steps
+
+> :warning: **Ignore this section if going the Calico Cloud route, refer to the next section for those steps**
 
 - Apply the operator and prometheus manifests from the repo:
 
@@ -174,6 +216,24 @@ EOF
   kubectl create -f manifests/managedcluster-custom-resources-example.yaml
   ```
 
+#### Calico Cloud Installation Steps
+
+> :warning: **Ignore this section if going the Calico Enterprise route, refer to the previous section for those steps**
+
+There needs to be a CNI present on the cluster before we connect it to Calico Cloud, so we will first install Calico OSS CNI on the cluster:
+
+- Install the operator:
+
+  ```kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.2/manifests/tigera-operator.yaml```
+
+- Modify the the Calico Installation CR as needed with the correct pod CIDR, then install it for cluster-2:
+  
+  ```kubectl create -f manifests/cc-cluster-2-calico-installation.yaml```
+
+### Adding worker nodes to the cluster
+
+Regardless of whether Calico Enterprise was installed on the cluster, or Calico OSS CNI was installed on the cluster, worker nodes and the nodegroup need to be added to the cluster:
+
 - Add nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-2.yaml``` file:
   
   ```bash
@@ -182,7 +242,11 @@ EOF
 
 - Monitor progress with ```kubectl get tigerastatus``` and once ```apiserver``` status shows ```Available```, install the license file.
 
-## MCM setup
+## Calico Enterprise Additional Steps (adding MCM)
+
+> :warning: **Ignore this section if going the Calico Cloud route, this is only required for Calico Enterprise**
+
+Here we will add cluster-2 as a managed cluster to the mgmt. cluster of cluster-1:
 
 - Create the mgmt cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/create-a-management-cluster)
 
@@ -216,6 +280,14 @@ EOF
   Ensure that the ```tigera-manager``` and ```tigera-linseed``` pods restart, and that the GUI of the mgmt. cluster shows the ```management-cluster``` in the right drop-down when the GUI svc comes back.
   
 - Create the managed cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/create-a-managed-cluster#create-the-connection-manifest-for-your-managed-cluster)
+
+#### Calico Cloud Additional Steps
+
+> :warning: **Ignore this section if going the Calico Enterprise route, refer to the previous section for those steps**
+
+- Now that worker nodes are added, we are ready to join the cluster to Calico Cloud
+
+- [Connect a cluster to Calico Cloud](https://docs.tigera.io/calico-cloud/get-started/connect/install-cluster)
 
 ## VPC Peering
 
