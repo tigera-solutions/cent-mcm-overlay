@@ -579,8 +579,9 @@ Here we will run some traffic flow tests by doing ```kubectl exec``` into pods
 
 In this demo, we will be enforcing the following network policy posture:
 
-
 ![zones_png](https://github.com/tigera-solutions/cent-mcm-overlay/assets/117195889/ac4f78dc-218d-4ee8-9b2e-26d44911fcca)
+
+### Apply Policies
 
 - On cluster-1, apply the policies:
   
@@ -590,5 +591,18 @@ In this demo, we will be enforcing the following network policy posture:
 
   ```kubectl create -f federated-policy/cluster-2-policy```
 
-- Check the policy board and enforce the ```default-deny``` staged policy.
+- Check the policy board and enforce the ```default-deny``` staged policy on both clusters.
 
+### Test Policies
+
+- Get the IP of one of the nginx pods in the ```zone == shared``` set of workloads:
+  
+  ```kubectl get pod -A -l zone=shared -o custom-columns="POD-NAME:.metadata.name,NAMESPACE:.metadata.namespace,IP:.status.podIP,POD-LABELS:.metadata.labels"```
+
+- On cluster-1, exec into the shell of the ```client``` pod and try to hit the pod IP from the previous step:
+
+  ```kubectl -n client exec -it $(kubectl get po -n client -l role=client -ojsonpath='{.items[0].metadata.name}')  -- /bin/bash -c 'curl -m3 -I http://172.17.170.217:80'```
+
+  The response should return a HTTP 200 OK as the policy should allow the traffic.
+
+- Look at the flow on the service graph in Calico Cloud to understand the flow log and to confirm the policies that were evaluated by Calico to allow the flow to the destination pod.
