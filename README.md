@@ -34,7 +34,7 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 
 - Next, decide if you want to install Calico Enterprise mgmt. plane on this cluster or if you want to connect the cluster to Calico Cloud.
 
-#### Calico Enterprise Installation Steps
+### Calico Enterprise Installation Steps
 
 > :warning: **Ignore this section if going the Calico Cloud route, refer to the next section for those steps**
 
@@ -112,7 +112,7 @@ volumeBindingMode: WaitForFirstConsumer
 EOF
 ```
 
-#### Calico Cloud Installation Steps
+### Calico Cloud Installation Steps
 
 > :warning: **Ignore this section if going the Calico Enterprise route, refer to the previous section for those steps**
 
@@ -138,7 +138,7 @@ Regardless of whether Calico Enterprise was installed on the cluster, or Calico 
 
 - Monitor progress with ```kubectl get tigerastatus``` and once ```apiserver``` status shows ```Available```, proceed to the next steps depending on whether you installed Calico Enterprise or intend to join the cluster to Calico Cloud.
 
-#### Calico Enterprise Additional Steps
+### Calico Enterprise Additional Steps
 
 > :warning: **Ignore this section if going the Calico Cloud route, refer to the next section for those steps**
 
@@ -152,7 +152,7 @@ Regardless of whether Calico Enterprise was installed on the cluster, or Calico 
 
 - Once the rest of the cluster comes up, configure user access to the manager UI with the docs [here](https://docs.tigera.io/calico-enterprise/next/operations/cnx/access-the-manager)
 
-#### Calico Cloud Additional Steps
+### Calico Cloud Additional Steps
 
 > :warning: **Ignore this section if going the Calico Enterprise route, refer to the previous section for those steps**
 
@@ -178,7 +178,7 @@ Regardless of whether Calico Enterprise was installed on the cluster, or Calico 
   kubectl delete daemonset -n kube-system aws-node
   ```
 
-#### Calico Enterprise Installation Steps
+### Calico Enterprise Installation Steps
 
 > :warning: **Ignore this section if going the Calico Cloud route, refer to the next section for those steps**
 
@@ -216,7 +216,7 @@ Regardless of whether Calico Enterprise was installed on the cluster, or Calico 
   kubectl create -f manifests/managedcluster-custom-resources-example.yaml
   ```
 
-#### Calico Cloud Installation Steps
+### Calico Cloud Installation Steps
 
 > :warning: **Ignore this section if going the Calico Enterprise route, refer to the previous section for those steps**
 
@@ -242,7 +242,7 @@ Regardless of whether Calico Enterprise was installed on the cluster, or Calico 
 
 - Monitor progress with ```kubectl get tigerastatus``` and once ```apiserver``` status shows ```Available```, install the license file.
 
-## Calico Enterprise Additional Steps (adding MCM)
+### Calico Enterprise Additional Steps (adding MCM)
 
 > :warning: **Ignore this section if going the Calico Cloud route, this is only required for Calico Enterprise**
 
@@ -281,7 +281,7 @@ EOF
   
 - Create the managed cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/create-a-managed-cluster#create-the-connection-manifest-for-your-managed-cluster)
 
-#### Calico Cloud Additional Steps
+### Calico Cloud Additional Steps
 
 > :warning: **Ignore this section if going the Calico Enterprise route, refer to the previous section for those steps**
 
