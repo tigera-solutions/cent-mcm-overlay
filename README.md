@@ -687,6 +687,6 @@ In this demo, we will be enforcing the following network policy posture:
 
   ```kubectl -n client exec -it $(kubectl get po -n client -l role=client -ojsonpath='{.items[0].metadata.name}')  -- /bin/bash -c 'curl -m3 -I http://<dest-pod-IP>>:<port>'```
 
-  This flow to the ```frontend``` pod IP should fail and timeout due to the policy denying flows to ```zone=app2```
+  This flow to the ```frontend``` pod IP should fail and timeout due to the policy denying flows to ```zone == app2```
 
 - Look at the flow on the service graph in Calico Cloud to understand the flow log and to confirm the policies that were evaluated by Calico to deny the flow to the destination pod.
