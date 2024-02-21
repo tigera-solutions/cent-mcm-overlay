@@ -20,14 +20,14 @@ Calico Enterprise/Cloud federated endpoint identity and federated services are i
 
 This workshop is organized in sequential modules. One module will build up on top of the previous module, so please, follow the order as proposed below.
 
-Module 1 - [Getting Started](modules/module-1-getting-started.md)<br>
-Module 2 - [Deploy the EKS Clusters](modules/module-2-deploy-eks.md)<br>
-Module 3 - [Install Calico Enterprise](modules/module-3.1-install-calient-mgmt.md) **or** [Install Calico Cloud](modules/module-3.2-cc-setup.md)<br>
-Module 4 - [Setup VPC Peering](modules/module-4-setup-vpcpeering.md)<br>
-Module 5 - [Setup VXLAN Cluster Mesh](modules/module-5-setup-clustermesh.md)<br>
-Module 6 - [Install Demo Apps](modules/module-6-install-demo-apps.md)<br>
-Module 7 - [Testing Federated Endpoint Policy](modules/module-7-test-fed-endpoints.md)<br>
-Module 8 - [Testing Federated Service](modules/module-8-test-fed-svc.md)<br>
+Module 1 - [Getting Started](modules/module-1-getting-started.md)  
+Module 2 - [Deploy the EKS Clusters](modules/module-2-deploy-eks.md)  
+Module 3 - [Install Calico Enterprise](modules/module-3.1-install-calient-mgmt.md) **or** [Install Calico Cloud](modules/module-3.2-cc-setup.md)  
+Module 4 - [Setup VPC Peering](modules/module-4-setup-vpcpeering.md)  
+Module 5 - [Setup VXLAN Cluster Mesh](modules/module-5-setup-clustermesh.md)  
+Module 6 - [Install Demo Apps](modules/module-6-install-demo-apps.md)  
+Module 7 - [Testing Federated Endpoint Policy](modules/module-7-test-fed-endpoints.md)  
+Module 8 - [Testing Federated Service](modules/module-8-test-fed-svc.md)  
 
 ### Useful links
 
