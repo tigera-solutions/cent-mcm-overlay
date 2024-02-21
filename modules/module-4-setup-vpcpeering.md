@@ -1,6 +1,8 @@
 # Module 4 - Setup VPC Peering
 
-- [Doc on how to do this in the AWS console](https://docs.aws.amazon.com/vpc/latest/peering/create-vpc-peering-connection.html#same-account-different-region)
+## Using the AWS Console
+
+- [Official AWS docs](https://docs.aws.amazon.com/vpc/latest/peering/create-vpc-peering-connection.html#same-account-different-region) on how to do this.
 
 ## Using AWS CLI and filters
 
