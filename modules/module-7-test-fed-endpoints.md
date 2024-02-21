@@ -8,11 +8,39 @@ In this demo, we will be enforcing the following network policy posture:
 
 ## Apply Policies
 
+### Cluster-1
+
 - On cluster-1, apply the policies:
   
   ```bash
   kubectl create -f federated-policy/cluster-1-policy
   ```
+
+- Check the policy board and take note of the ```default-deny``` staged policy in the default tier.
+
+- Once satisfied that the policy is not denying any legitimate traffic, enforce the ```default-deny``` policy and delete the staged policy by applying the commands below.
+
+```bash
+kubectl apply -f - <<-EOF   
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: default.default-deny
+spec:
+  tier: default
+  order: 10000
+  selector: zone == "app1"
+  types:
+  - Ingress
+  - Egress
+EOF
+```
+
+```bash
+kubectl delete -f cluster-1-policy/01-default-deny.yaml
+```
+
+### Cluster-2
 
 - On cluster-2, apply the policies:
 
@@ -20,7 +48,29 @@ In this demo, we will be enforcing the following network policy posture:
   kubectl create -f federated-policy/cluster-2-policy
   ```
 
-- Check the policy board and enforce the ```default-deny``` staged policy on both clusters.
+- Check the policy board and take note of the ```default-deny``` staged policy in the default tier.
+
+- Once satisfied that the policy is not denying any legitimate traffic, enforce the ```default-deny``` policy and delete the staged policy by applying the commands below.
+
+```bash
+kubectl apply -f - <<-EOF   
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: default.default-deny
+spec:
+  tier: default
+  order: 10000
+  selector: zone == "app2" || zone == "shared"
+  types:
+  - Ingress
+  - Egress
+EOF
+```
+
+```bash
+kubectl delete -f cluster-2-policy/01-default-deny.yaml
+```
 
 ## Test Policies
 
