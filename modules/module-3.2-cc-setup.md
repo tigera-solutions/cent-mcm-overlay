@@ -50,7 +50,6 @@
 
   [Connect a cluster to Calico Cloud](https://docs.tigera.io/calico-cloud/get-started/connect/install-cluster)
 
-
-[:arrow_right: Module 4 - Setup VPC Peering](module-4-setup-vpcpeering.md) <br>
+[:arrow_right: Module 4 - Setup VPC Peering](module-4-setup-vpcpeering.md)  
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)

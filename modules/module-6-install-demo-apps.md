@@ -156,6 +156,6 @@ Here we will run some traffic flow tests by doing ```kubectl exec``` into pods
     Accept-Ranges: bytes
     ```
 
-[:arrow_right: Module 7 - Testing Federated Endpoint Policy](module-7-test-fed-endpoints.md) <br>
+[:arrow_right: Module 7 - Testing Federated Endpoint Policy](module-7-test-fed-endpoints.md)  
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)

@@ -44,6 +44,6 @@ In this demo, we will be enforcing the following network policy posture:
 
 - Look at the flow on the service graph in Calico Cloud to understand the flow log and to confirm the policies that were evaluated by Calico to deny the flow to the destination pod.
 
-[:arrow_right: Module 8 - Testing Federated Services](module-8-test-fed-svc.md) <br>
+[:arrow_right: Module 8 - Testing Federated Services](module-8-test-fed-svc.md)
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)

@@ -136,6 +136,6 @@ calicoq eval "all()"
 
 - Refer to the [troubleshooting section](https://docs.tigera.io/calico-cloud/multicluster/kubeconfig#troubleshoot) of the docs.
 
-[:arrow_right: Module 6 - Install Demo Apps](module-6-install-demo-apps.md) <br>
+[:arrow_right: Module 6 - Install Demo Apps](module-6-install-demo-apps.md)  
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)

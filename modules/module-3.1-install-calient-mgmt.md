@@ -177,6 +177,6 @@ EOF
   
 - Create the managed cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/create-a-managed-cluster#create-the-connection-manifest-for-your-managed-cluster)
 
-[:arrow_right: Module 4 - Setup VPC Peering](module-4-setup-vpcpeering.md) <br>
+[:arrow_right: Module 4 - Setup VPC Peering](module-4-setup-vpcpeering.md)  
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)
