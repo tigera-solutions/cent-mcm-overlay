@@ -102,7 +102,11 @@ vi /.kube/config
 
 - Paste your kubeconfig for the cluster from your laptop's ~/.kube/config (or wherever you have it), save the file.
 
-- Run ```aws configure``` and [setup your identity](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-methods) on that node to the AWS CLI so that calicoq can actually call to AWS and authenticate the identity with the kubeconfig file.
+- Run ```aws configure``` and [setup your identity](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-methods) on that node to the AWS CLI so that calicoq can actually call to AWS and authenticate the identity with the kubeconfig file. You can also run the following command once setup to verify that the account and ARN details are correct for your user:
+
+  ```bash
+  aws sts get-caller-identity
+  ```
 
 - Now run calicoq
 
@@ -137,5 +141,6 @@ calicoq eval "all()"
 - Refer to the [troubleshooting section](https://docs.tigera.io/calico-cloud/multicluster/kubeconfig#troubleshoot) of the docs.
 
 [:arrow_right: Module 6 - Install Demo Apps](module-6-install-demo-apps.md)  
+[:arrow_left: Module 4 - Setup VPC Peering](module-4-setup-vpcpeering.md)  
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)
