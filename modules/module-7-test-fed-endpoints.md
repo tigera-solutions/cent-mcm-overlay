@@ -10,11 +10,15 @@ In this demo, we will be enforcing the following network policy posture:
 
 - On cluster-1, apply the policies:
   
-  ```kubectl create -f federated-policy/cluster-1-policy```
+  ```bash
+  kubectl create -f federated-policy/cluster-1-policy
+  ```
 
 - On cluster-2, apply the policies:
 
-  ```kubectl create -f federated-policy/cluster-2-policy```
+  ```bash
+  kubectl create -f federated-policy/cluster-2-policy
+  ```
 
 - Check the policy board and enforce the ```default-deny``` staged policy on both clusters.
 
@@ -22,11 +26,15 @@ In this demo, we will be enforcing the following network policy posture:
 
 - On cluster-2, get the IP of one of the nginx pods in the ```zone == shared``` set of workloads:
   
-  ```kubectl get pod -A -l zone=shared -o custom-columns="POD-NAME:.metadata.name,NAMESPACE:.metadata.namespace,IP:.status.podIP,POD-LABELS:.metadata.labels"```
+  ```bash
+  kubectl get pod -A -l zone=shared -o custom-columns="POD-NAME:.metadata.name,NAMESPACE:.metadata.namespace,IP:.status.podIP,POD-LABELS:.metadata.labels"
+  ```
 
 - On cluster-1, exec into the shell of the ```client``` pod and try to hit the pod IP from the previous step:
 
-  ```kubectl -n client exec -it $(kubectl get po -n client -l role=client -ojsonpath='{.items[0].metadata.name}')  -- /bin/bash -c 'curl -m3 -I http://<dest-pod-IP>>:<port>'```
+  ```bash
+  kubectl -n client exec -it $(kubectl get po -n client -l role=client -ojsonpath='{.items[0].metadata.name}')  -- /bin/bash -c 'curl -m3 -I http://<dest-pod-IP>>:<port>'
+  ```
 
   The response should return a HTTP 200 OK as the policy should allow the traffic.
 
@@ -34,11 +42,15 @@ In this demo, we will be enforcing the following network policy posture:
 
 - On cluster-2, get the IP of one of the ```frontend``` pods in the ```zone == app2``` set of workloads:
   
-  ```kubectl get pod -A -l zone=app2 -o custom-columns="POD-NAME:.metadata.name,NAMESPACE:.metadata.namespace,IP:.status.podIP,POD-LABELS:.metadata.labels"```
+  ```bash
+  kubectl get pod -A -l zone=app2 -o custom-columns="POD-NAME:.metadata.name,NAMESPACE:.metadata.namespace,IP:.status.podIP,POD-LABELS:.metadata.labels"
+  ```
 
 - On cluster-1, exec into the shell of the ```client``` pod and try to hit the pod IP from the previous step:
 
-  ```kubectl -n client exec -it $(kubectl get po -n client -l role=client -ojsonpath='{.items[0].metadata.name}')  -- /bin/bash -c 'curl -m3 -I http://<dest-pod-IP>>:<port>'```
+  ```bash
+  kubectl -n client exec -it $(kubectl get po -n client -l role=client -ojsonpath='{.items[0].metadata.name}')  -- /bin/bash -c 'curl -m3 -I http://<dest-pod-IP>>:<port>'
+  ```
 
   This flow to the ```frontend``` pod IP should fail and timeout due to the policy denying flows to ```zone == app2```
 
