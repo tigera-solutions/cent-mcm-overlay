@@ -1,0 +1,20 @@
+# Stars namespaces
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stars
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: management-ui
+  labels:
+    role: management-ui
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: client
+  labels:
+    role: client

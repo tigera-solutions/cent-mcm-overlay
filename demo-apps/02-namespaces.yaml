@@ -1,0 +1,67 @@
+# Dev app namespaces
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+
+# Hipstershop Namespaces
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: emailservice
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: checkoutservice
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: recommendationservice
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: frontend
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: paymentservice
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: productcatalogservice
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cartservice
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: loadgenerator
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: currencyservice
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shippingservice
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: redis-cart
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: adservice
