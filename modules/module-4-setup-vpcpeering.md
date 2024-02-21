@@ -62,6 +62,9 @@ aws ec2 create-route --region us-east-1 --route-table-id $ROUTE_ID_CB --destinat
 
 - Ensure that as a minimum VXLAN UDP port 4789 is opened on both clusters for each other's VPC CIDR, and possibly ICMP if you want to run ping tests between pods in the two clusters.
 
-[:arrow_right: Module 5 - Setup VXLAN Cluster Mesh](module-5-setup-clustermesh.md)  
+[:arrow_right: Module 5 - Setup VXLAN Cluster Mesh](module-5-setup-clustermesh.md)
+
+[:arrow_left: Module 3.1 - Install Calico Enterprise](module-3.1-install-calient-mgmt.md)  
+[:arrow_left: Module 3.2 - Setup clusters and connect to Calico Cloud](module-3.2-cc-setup.md)  
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)

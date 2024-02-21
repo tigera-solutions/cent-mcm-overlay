@@ -58,4 +58,6 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 
     [:arrow_right: Module 3.2 - Setup clusters and connect to Calico Cloud](module-3.2-cc-setup.md)
 
+[:arrow_left: Module 1 - Getting Started](module-1-getting-started.md)  
+
 [:leftwards_arrow_with_hook: Back to Main](../README.md)

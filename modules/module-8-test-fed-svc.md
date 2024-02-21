@@ -50,4 +50,6 @@ kubectl scale deployment nginx --replicas=2
 kubectl scale deployment nginx --replicas=0
 ```
 
+[:arrow_left: Module 7 - Test Federated Endpoint Policy](module-7-test-fed-endpoints.md)  
+
 [:leftwards_arrow_with_hook: Back to Main](../README.md)

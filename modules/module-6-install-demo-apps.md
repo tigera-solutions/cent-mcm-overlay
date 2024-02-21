@@ -157,5 +157,6 @@ Here we will run some traffic flow tests by doing ```kubectl exec``` into pods
     ```
 
 [:arrow_right: Module 7 - Testing Federated Endpoint Policy](module-7-test-fed-endpoints.md)  
+[:arrow_left: Module 5 - Setup VXLAN Cluster Mesh](module-5-setup-clustermesh.md)  
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)
