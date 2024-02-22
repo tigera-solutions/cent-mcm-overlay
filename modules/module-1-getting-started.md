@@ -91,6 +91,6 @@ The following are the basic requirements to get going.
    git clone https://github.com/tigera-solutions/cent-mcm-overlay.git  && cd cent-mcm-overlay
    ```
 
-[:arrow_right: Module 2 - Deploy the EKS Clusters](module-2-deploy-eks.md) <br>
+[:arrow_right: Module 2 - Deploy the EKS Clusters](module-2-deploy-eks.md)
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)
