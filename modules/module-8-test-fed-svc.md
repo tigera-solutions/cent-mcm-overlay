@@ -32,7 +32,7 @@ kubectl get endpoints nginx-federated
 
 >You should see that the local service only aggregates endpoints from the local cluster, but the federated service aggregates endpoints from both clusters.
 
-Patch `default/nginx` deployment to have `zone=shared` label since the `client/client` pod only can egress to `zone=app` and `zone=shared` endpoints.
+Patch `default/nginx` deployment to have `zone=shared` label since the `client/client` pod only can egress to `zone=app1` and `zone=shared` endpoints.
 
 ```bash
 # run this command in cluster1 and cluster2
