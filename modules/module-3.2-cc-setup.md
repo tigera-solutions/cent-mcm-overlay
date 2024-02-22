@@ -36,7 +36,7 @@
 
 - Modify the the Calico Installation CR file as needed with the correct pod CIDR, then install it for cluster-1:
   
-  ```kubectl create -f manifests/cc-cluster-1-calico-installation.yaml```
+  ```kubectl create -f manifests/cc-cluster-2-calico-installation.yaml```
 
 - Add worker nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-1.yaml``` file:
 
