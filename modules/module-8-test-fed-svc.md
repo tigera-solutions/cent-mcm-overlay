@@ -32,6 +32,13 @@ kubectl get endpoints nginx-federated
 
 >You should see that the local service only aggregates endpoints from the local cluster, but the federated service aggregates endpoints from both clusters.
 
+Patch `default/nginx` deployment to have `zone=shared` label since the `client/client` pod only can egress to `zone=app` and `zone=shared` endpoints.
+
+```bash
+# run this command in cluster1 and cluster2
+kubectl patch deploy nginx --patch-file federated-svc/nginx-deploy-patch.yaml
+```
+
 ## Test Federated Service
 
 Open shell into a pod (e.g. `client` pod) and continuously query the federated service. Then try to scale endpoints behind the `default/nginx` deployment in each cluster and observe the IPs reported by querying the federated service.
