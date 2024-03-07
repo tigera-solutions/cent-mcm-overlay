@@ -1,0 +1,16 @@
+apiVersion: app.redislabs.com/v1alpha1
+kind: RedisEnterpriseActiveActiveDatabase
+metadata:
+  name: reaadb-testdb
+  namespace: redis
+  labels:
+    app: redis-enterprise
+spec:
+  globalConfigurations:
+    databaseSecretName: testdb-secret
+    databasePort: 11069
+    memorySize: 200MB
+    shardCount: 3
+  participatingClusters:
+      - name: rerc-cacentral
+      - name: rerc-useast

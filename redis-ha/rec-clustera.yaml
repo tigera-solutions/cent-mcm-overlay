@@ -1,0 +1,12 @@
+apiVersion: "app.redislabs.com/v1"
+kind: "RedisEnterpriseCluster"
+metadata:
+  name: demo-clustera
+spec:
+  nodes: 3
+  redisEnterpriseNodeResources:
+    limits:
+      memory: 4Gi
+    requests:
+      cpu: 1
+      memory: 4Gi

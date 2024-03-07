@@ -1,0 +1,11 @@
+apiVersion: app.redislabs.com/v1alpha1
+kind: RedisEnterpriseRemoteCluster
+metadata:
+  name: rerc-useast
+  namespace: redis
+spec:
+  recName: demo-clusterb
+  recNamespace: redis
+  apiFqdnUrl: rerc-useast.redis
+  dbFqdnSuffix: -db-useast.redis
+  secretName: redis-enterprise-rerc-useast

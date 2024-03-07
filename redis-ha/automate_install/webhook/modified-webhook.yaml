@@ -1,0 +1,5 @@
+webhooks:
+- name: redisenterprise.admission.redislabs
+  namespaceSelector:
+    matchLabels:
+      namespace-name: redis

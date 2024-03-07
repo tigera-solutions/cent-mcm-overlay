@@ -1,0 +1,4 @@
+metadata:
+  labels:
+    redis-enterprise-dbreplication-region: "useast"
+    federation: "yes"
