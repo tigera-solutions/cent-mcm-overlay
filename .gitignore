@@ -1,2 +1,3 @@
 manifests/_output
 *.env
+redis-ha/automate_install/_output
