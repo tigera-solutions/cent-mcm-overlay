@@ -277,6 +277,89 @@ check_redis_status () {
     done
 }
 
+# Clean-up functions
+delete_reaadb () {
+    echo "Changing context back to K8s cluster ${INSTALL_K8S_CONTEXTS[0]}"
+    kubectl config use-context ${INSTALL_K8S_CONTEXTS[0]}
+    echo "Deleting REAADB CR"
+    kubectl delete reaadb $REAADB_NAME -n $INSTALL_NAMESPACE
+    echo
+    echo "Deleting REAADB replication federated services"
+    for i in "${!INSTALL_K8S_CONTEXTS[@]}"
+    do
+        echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
+        kubectl config use-context ${INSTALL_K8S_CONTEXTS[i]}
+        for j in "${!INSTALL_K8S_CONTEXTS[@]}"
+        do
+            echo "Deleting the federated service $REAADB_NAME-db-${REGION[j]}"
+            kubectl delete svc -n $INSTALL_NAMESPACE $REAADB_NAME-db-${REGION[j]}
+        done
+        echo "Deleting the REAADB secret $REAADB_NAME-secret"
+        kubectl delete secret -n $INSTALL_NAMESPACE $REAADB_NAME-secret
+        echo
+        echo "Check that the REAADB CR is cleaned up"
+        kubectl get reaadb -n $INSTALL_NAMESPACE
+        echo "Check that the REAADB federated services are cleaned up"
+        kubectl get svc -n $INSTALL_NAMESPACE | grep $REAADB_NAME-db
+        echo "Check that the REAADB secrets are cleaned up"
+        kubectl get secret -n $INSTALL_NAMESPACE | grep $REAADB_NAME-secret
+        echo
+        echo
+    done       
+}
+
+delete_rerc () {
+    for i in "${!INSTALL_K8S_CONTEXTS[@]}"
+    do
+        echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
+        kubectl config use-context ${INSTALL_K8S_CONTEXTS[i]}
+        echo
+        echo "Deleting the RERC CRs"
+        for j in "${!INSTALL_K8S_CONTEXTS[@]}"
+        do
+            echo "Deleting RERC named ${RERC_NAMES[j]} in $INSTALL_NAMESPACE namespace"
+            kubectl delete rerc -n $INSTALL_NAMESPACE ${RERC_NAMES[j]}
+        done
+        echo
+        echo "Deleting the RERC API endpoint federated services"
+        for j in "${!INSTALL_K8S_CONTEXTS[@]}"
+        do
+            echo "Deleting the RERC federated svc ${RERC_NAMES[j]} in $INSTALL_NAMESPACE namespace"
+            kubectl delete svc -n $INSTALL_NAMESPACE ${RERC_NAMES[j]}
+        done
+        echo
+        echo "Deleting the RERC secrets"
+        for j in "${!INSTALL_K8S_CONTEXTS[@]}"
+        do
+            echo "Deleting the RERC secret ${REC_NAMES[j]}-secret in $INSTALL_NAMESPACE namespace"
+            kubectl delete secret -n $INSTALL_NAMESPACE ${REC_NAMES[j]}-secret
+        done
+        echo
+        echo "Check that RERC objects are cleaned up"
+        kubectl get rerc -n $INSTALL_NAMESPACE
+        echo "Check that the RERC federated svcs are cleaned up"
+        kubectl get svc -n $INSTALL_NAMESPACE
+        echo "Check that the RERC secrets are cleaned up"
+        kubectl get secret -n $INSTALL_NAMESPACE
+    done
+}
+
+delete_rec () {
+    for i in "${!INSTALL_K8S_CONTEXTS[@]}"
+    do
+        echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
+        kubectl config use-context ${INSTALL_K8S_CONTEXTS[i]}
+        echo "Deleting REC objects"
+        kubectl delete rec -n $INSTALL_NAMESPACE ${REC_NAMES[i]}
+        echo "Check the REC objects are cleaned up"
+        kubectl get rec -n $INSTALL_NAMESPACE
+        echo "Check the REC svcs are cleaned up"
+        kubectl get svc -n $INSTALL_NAMESPACE
+        echo "Check the REC secrets are cleaned up"
+        kubectl get secret -n $INSTALL_NAMESPACE
+    done
+}
+
 # NOT USED IN REPO AT THIS TIME
 # This function and accompanying manifests are here for future use.  
 # At this moment the only way to get any Admission Controllers working on EKS with Calico CNI is putting them in host-networked mode. 
