@@ -17,4 +17,5 @@ create_rerc_configs
 apply_rerc_configs
 create_reaadb_configs
 apply_reaadb_configs
+create_db_fedsvc
 check_redis_status

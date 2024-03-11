@@ -254,6 +254,38 @@ apply_reaadb_configs () {
     echo
 }
 
+create_db_fedsvc () {
+    for i in "${!INSTALL_K8S_CONTEXTS[@]}"
+    do
+        echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
+        kubectl config use-context ${INSTALL_K8S_CONTEXTS[i]}
+        echo
+        echo "Creating database federated service named $REAADB_NAME-federated in namespace $INSTALL_NAMESPACE"
+        kubectl create -f - << EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: $REAADB_NAME-federated
+  namespace: $INSTALL_NAMESPACE
+  annotations:
+    federation.tigera.io/serviceSelector: federation == "yes"
+spec:
+  ports:
+    - name: redis
+      port: $REAADB_PORT
+      protocol: TCP
+  type: ClusterIP
+EOF
+        echo "Labeling the local $REAADB_NAME service to federate it"
+        echo "Running: kubectl label svc -n $INSTALL_NAMESPACE $REAADB_NAME federation=yes"
+        kubectl label svc -n $INSTALL_NAMESPACE $REAADB_NAME federation=yes
+        echo "Check the endpoints for the $REAADB_NAME-federated service for local and remote endpoints"
+        echo "Running: kubectl get endpoints -n $INSTALL_NAMESPACE $REAADB_NAME-federated"
+        kubectl get endpoints -n $INSTALL_NAMESPACE $REAADB_NAME-federated
+        echo
+    done
+}
+
 check_redis_status () {
     for i in "${!INSTALL_K8S_CONTEXTS[@]}"
     do
