@@ -317,6 +317,17 @@ check_redis_status () {
 }
 
 # Clean-up functions
+delete_db_fedsvc () {
+    for i in "${!INSTALL_K8S_CONTEXTS[@]}"
+    do
+        echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
+        kubectl config use-context ${INSTALL_K8S_CONTEXTS[i]}
+        echo "Deleting database federated service named $REAADB_NAME-federated in namespace $INSTALL_NAMESPACE"
+        kubectl delete svc $REAADB_NAME-federated -n $INSTALL_NAMESPACE
+        echo
+    done
+}
+
 delete_reaadb () {
     echo "Changing context back to K8s cluster ${INSTALL_K8S_CONTEXTS[0]}"
     kubectl config use-context ${INSTALL_K8S_CONTEXTS[0]}
@@ -371,7 +382,7 @@ delete_rerc () {
         for j in "${!INSTALL_K8S_CONTEXTS[@]}"
         do
             echo "Deleting the RERC secret ${REC_NAMES[j]}-secret in $INSTALL_NAMESPACE namespace"
-            kubectl delete secret -n $INSTALL_NAMESPACE ${REC_NAMES[j]}-secret
+            kubectl delete secret -n $INSTALL_NAMESPACE redis-enterprise-${RERC_NAMES[j]}
         done
         echo
         echo "Check that RERC objects are cleaned up"

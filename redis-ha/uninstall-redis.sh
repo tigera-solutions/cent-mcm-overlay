@@ -9,6 +9,7 @@ if ! [ -x "$(command -v kubectl)" ]; then
   exit 1
 fi
 
+delete_db_fedsvc
 delete_reaadb
 delete_rerc
 delete_rec
