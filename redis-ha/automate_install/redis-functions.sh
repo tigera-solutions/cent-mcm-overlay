@@ -53,8 +53,9 @@ EOF
 # Create RERC (Redis Enterprise Remote Cluster) CR and accompanying manifest files
 create_rerc_configs () {
     echo "Creating secrets for all participating RECs"
-    echo "Making _output directory"
+    echo "Making _output directory (if it doesn't already exist)"
     mkdir -p $SCRIPT_DIR/_output
+    echo
     for i in "${!INSTALL_K8S_CONTEXTS[@]}"
     do
         echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
@@ -62,18 +63,18 @@ create_rerc_configs () {
         echo "Creating secret manifest for REC named ${REC_NAMES[i]} for region ${REGION[i]} and namespace $INSTALL_NAMESPACE"
         REC_USERNAME=$(kubectl -n $INSTALL_NAMESPACE get secret ${REC_NAMES[i]} -o jsonpath='{.data.username}')
         REC_PASSWORD=$(kubectl -n $INSTALL_NAMESPACE get secret ${REC_NAMES[i]} -o jsonpath='{.data.password}')
-        cat > $SCRIPT_DIR/_output/${REC_NAMES[i]}-secret.yaml << EOF
+        cat > $SCRIPT_DIR/_output/redis-enterprise-${RERC_NAMES[i]}-secret.yaml << EOF
 apiVersion: v1
 data:
   password: $REC_PASSWORD
   username: $REC_USERNAME
 kind: Secret
 metadata:
-  name: ${REC_NAMES[i]}-secret
+  name: redis-enterprise-${RERC_NAMES[i]}
   namespace: $INSTALL_NAMESPACE
 type: Opaque
 EOF
-        echo "Creating RERC manifest for ${REGION[i]} using the secret named ${REC_NAMES[i]}-secret"
+        echo "Creating RERC manifest for ${REGION[i]} using the secret named redis-enterprise-${RERC_NAMES[i]}"
         cat > $SCRIPT_DIR/_output/${RERC_NAMES[i]}.yaml << EOF
 apiVersion: app.redislabs.com/v1alpha1
 kind: RedisEnterpriseRemoteCluster
@@ -85,7 +86,7 @@ spec:
   recNamespace: $INSTALL_NAMESPACE
   apiFqdnUrl: ${RERC_NAMES[i]}.$INSTALL_NAMESPACE
   dbFqdnSuffix: -db-${REGION[i]}.$INSTALL_NAMESPACE
-  secretName: ${REC_NAMES[i]}-secret
+  secretName: redis-enterprise-${RERC_NAMES[i]}
 EOF
         echo "Creating RERC API endpoint federated services manifest"
         cat > $SCRIPT_DIR/_output/${RERC_NAMES[i]}-fedsvc.yaml << EOF
@@ -120,13 +121,13 @@ apply_rerc_configs () {
         for j in "${!INSTALL_K8S_CONTEXTS[@]}"
         do
             echo "Applying the secret manifest ${REC_NAMES[j]}-secret"
-            kubectl create -f $SCRIPT_DIR/_output/${REC_NAMES[j]}-secret.yaml
+            kubectl create -f $SCRIPT_DIR/_output/redis-enterprise-${RERC_NAMES[j]}-secret.yaml
             echo
             echo "Applying the RERC manifest ${RERC_NAMES[j]}"
             kubectl create -f $SCRIPT_DIR/_output/${RERC_NAMES[j]}.yaml
             echo
             echo "Applying RERC API endpoint federated services manifest for ${RERC_NAMES[i]} "
-            kubectl create -f $SCRIPT_DIR/_output/${RERC_NAMES[i]}-fedsvc.yaml
+            kubectl create -f $SCRIPT_DIR/_output/${RERC_NAMES[j]}-fedsvc.yaml
         done
         echo "Checking RERC status"
         kubectl get rerc -n $INSTALL_NAMESPACE
@@ -144,7 +145,6 @@ apply_rerc_configs () {
 }
 
 # Create REAADB (Redis Enterprise Active-Active Database) and accompanying manifests
-# The main REAADB CR manifest only needs to be applied once on one cluster
 create_reaadb_configs () {
     echo "Create the READDB blank secret manifest to create a database without authentication"
     cat > $SCRIPT_DIR/_output/$REAADB_NAME-secret.yaml << EOF
@@ -187,7 +187,7 @@ EOF
 apiVersion: v1
 kind: Service
 metadata:
-  name: $REAADB_NAME-db-${REGION[i]}.$INSTALL_NAMESPACE
+  name: $REAADB_NAME-db-${REGION[i]}
   namespace: $INSTALL_NAMESPACE
   annotations:
     federation.tigera.io/serviceSelector: redis-enterprise-dbreplication-region == "${REGION[i]}"
@@ -202,6 +202,7 @@ EOF
     done
 }
 
+# The main REAADB CR manifest only needs to be applied once on one cluster
 apply_reaadb_configs () {
     for i in "${!INSTALL_K8S_CONTEXTS[@]}"
     do
@@ -221,6 +222,8 @@ apply_reaadb_configs () {
     kubectl config use-context ${INSTALL_K8S_CONTEXTS[0]}
     echo "Finally applying the REAADB CR manifest"
     kubectl create -f $SCRIPT_DIR/_output/$REAADB_NAME.yaml
+    echo "Sleeping for 5 seconds for the resources to be created"
+    sleep 5
     echo "If any errors show up, check configs"
     echo
     echo "Patch the $REAADB_NAME service with the correct label to enable federation"
@@ -239,6 +242,10 @@ apply_reaadb_configs () {
         echo "Check the DB replication federated endpoints got populated"
         echo "Running: kubectl get endpoints -n $INSTALL_NAMESPACE | grep $REAADB_NAME-db"
         kubectl get endpoints -n $INSTALL_NAMESPACE | grep $REAADB_NAME-db
+        echo
+        echo "Sleeping for 5 seconds for replication status to be updated"
+        sleep 5
+        echo
         echo "Check the REAADB config and replication status"
         echo "Running: kubectl get reaadb -n $INSTALL_NAMESPACE"
         kubectl get reaadb -n $INSTALL_NAMESPACE

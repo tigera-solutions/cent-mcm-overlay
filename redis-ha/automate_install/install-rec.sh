@@ -17,6 +17,4 @@ create_rerc_configs
 apply_rerc_configs
 create_reaadb_configs
 apply_reaadb_configs
-echo "Sleeping 5 seconds for REAADB status to get updated"
-sleep 5
 check_redis_status
