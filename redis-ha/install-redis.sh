@@ -10,8 +10,6 @@ if ! [ -x "$(command -v kubectl)" ]; then
 fi
 
 install_rec_operator
-echo "Sleeping 3 seconds for CRDs to be created"
-sleep 3
 install_rec_deployment
 create_rerc_configs
 apply_rerc_configs

@@ -22,6 +22,8 @@ install_rec_operator () {
         kubectl create namespace $INSTALL_NAMESPACE
         VERSION=$(curl --silent https://api.github.com/repos/RedisLabs/redis-enterprise-k8s-docs/releases/latest | grep tag_name | awk -F'"' '{print $4}')
         kubectl -n $INSTALL_NAMESPACE apply -f https://raw.githubusercontent.com/RedisLabs/redis-enterprise-k8s-docs/$VERSION/bundle.yaml
+        echo "Sleeping 3 seconds for CRDs to be properly created"
+        sleep 3
         echo
     done
 }
@@ -255,10 +257,50 @@ apply_reaadb_configs () {
     kubectl config use-context ${INSTALL_K8S_CONTEXTS[0]}
     echo "${YELLOW}Finally applying the REAADB CR manifest${NC}"
     kubectl create -f $SCRIPT_DIR/_output/$REAADB_NAME.yaml
-    echo "${BLUE}Sleeping for 10 seconds for the resources to be created${NC}"
-    sleep 10
+    echo "${YELLOW}Checking REAADB status${NC}"
+    START_TIME=$(date +%s)
+    MAX_TIME=$((10*60))
+    REAADB_STATUS=""
+    # Run the loop until REAADB_STATUS is 'Running' or 10 minutes have passed
+    until [ "$REAADB_STATUS" = "active" ] || [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; do
+        echo "${YELLOW}Checking status of the REAADB${NC}"
+        # Update REAADB_STATUS
+        REAADB_STATUS=$(kubectl get reaadb $REAADB_NAME -n $INSTALL_NAMESPACE -ojsonpath='{..status.status}')
+        # Sleeping for 10 seconds before checking again
+        echo "${BLUE}The REAADB status is $REAADB_STATUS, sleeping for 10 seconds and checking again${NC}"
+        sleep 10
+        echo
+    done
+    if [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; then
+        echo "${RED}Stopped checking REAADB status because 10 minutes have passed, you need to debug why${NC}"
+        echo "${RED}The install script will fully exit here so that you can manually debug further as the rest of the steps cannot proceed${NC}"
+        exit 1
+    else
+        echo "${GREEN}Stopped checking because REAADB status is 'active', going to proceed with next steps${NC}"
+    fi
+    START_TIME=$(date +%s)
+    MAX_TIME=$((5*60))
+    REAADB_SVC_STATUS=""
+    until [ "$REAADB_SVC_STATUS" = "$REAADB_NAME" ] || [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; do
+        echo "${YELLOW}Checking that the local db service $REAADB_NAME got created in the $INSTALL_NAMESPACE namespace${NC}"
+        # Update REAADB_SVC_STATUS
+        REAADB_SVC_STATUS=$(kubectl get svc -n $INSTALL_NAMESPACE $REAADB_NAME -ojsonpath='{.metadata.name}')
+        # Sleeping for 10 seconds before checking again
+        echo "${BLUE}The $REAADB_NAME local service hasn't been created yet, sleeping for 10 seconds and checking again${NC}"
+        sleep 10
+        echo
+    done
+    if [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; then
+        echo "${RED}Stopped checking REAADB service status because 5 minutes have passed, you need to debug why${NC}"
+        echo "${RED}The install script will fully exit here so that you can manually debug further as the rest of the steps cannot proceed${NC}"
+        exit 1
+    else
+        echo "${GREEN}Stopped checking because the $REAADB_NAME local service now exists, going to proceed with next steps${NC}"
+    fi
+    # echo "${BLUE}Sleeping for 10 seconds for the resources to be created${NC}"
+    # sleep 10
     echo
-    echo "${YELLOW}Patching the $REAADB_NAME service with the correct label to enable federation${NC}"
+    echo "${YELLOW}Patching the local $REAADB_NAME service with the correct label to enable federation${NC}"
     for i in "${!INSTALL_K8S_CONTEXTS[@]}"
     do
         echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
@@ -275,14 +317,32 @@ apply_reaadb_configs () {
         echo "${YELLOW}Running: kubectl get endpoints -n $INSTALL_NAMESPACE | grep $REAADB_NAME-db${NC}"
         kubectl get endpoints -n $INSTALL_NAMESPACE | grep $REAADB_NAME-db
         echo
-        echo "${BLUE}Sleeping for 10 seconds for replication status to be updated${NC}"
+    done
+    echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[0]}"
+    kubectl config use-context ${INSTALL_K8S_CONTEXTS[0]}
+    # echo "${BLUE}Sleeping for 10 seconds for replication status to be updated${NC}"
+    # sleep 10
+    echo
+    echo "${YELLOW}Waiting for the REAADB replication status to come up${NC}"
+    START_TIME=$(date +%s)
+    MAX_TIME=$((10*60))
+    REAADB_REP_STATUS=""
+    until [ "$REAADB_REP_STATUS" = "up" ] || [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; do
+        echo "${YELLOW}Checking the REAADB replication status for $REAADB_NAME${NC}"
+        # Update REAADB_REP_STATUS
+        REAADB_REP_STATUS=$(kubectl get reaadb $REAADB_NAME -n $INSTALL_NAMESPACE -ojsonpath='{..status.replicationStatus}')
+        # Sleeping for 10 seconds before checking again
+        echo "${BLUE}The replication status for $REAADB_NAME is $REAADB_REP_STATUS, sleeping for 10 seconds and checking again${NC}"
         sleep 10
         echo
-        echo "${YELLOW}Checking the REAADB config and replication status${NC}"
-        echo "${YELLOW}Running: kubectl get reaadb -n $INSTALL_NAMESPACE${NC}"
-        kubectl get reaadb -n $INSTALL_NAMESPACE
-        echo
-    done    
+    done
+    if [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; then
+        echo "${RED}Stopped checking REAADB replication status because 10 minutes have passed, you need to debug why${NC}"
+        echo "${RED}The install script will fully exit here so that you can manually debug further as the rest of the steps cannot proceed${NC}"
+        exit 1
+    else
+        echo "${GREEN}Stopped checking because the $REAADB_NAME replication status is now $REAADB_REP_STATUS, going to proceed with next steps${NC}"
+    fi
     echo
 }
 
