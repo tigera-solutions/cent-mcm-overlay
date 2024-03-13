@@ -395,7 +395,7 @@ check_redis_status () {
         kubectl get reaadb -n $INSTALL_NAMESPACE
         echo
         TARGET_REC=$(kubectl get rec -n $INSTALL_NAMESPACE -ojsonpath='{.items..metadata.name}')
-        echo "${YELLOW}Exec into $TARGET_REC-0 pod in $REDIS_NAMESPACE namespace and checking the status of the database${NC}"
+        echo "${YELLOW}Exec into $TARGET_REC-0 pod in $INSTALL_NAMESPACE namespace and checking the status of the database${NC}"
         kubectl exec -it $TARGET_REC-0 -n $INSTALL_NAMESPACE -c redis-enterprise-node -- bash -c 'rladmin status'
         echo
         echo "${YELLOW}Checking all Redis svcs in $INSTALL_NAMESPACE namespace with their labels${NC}"
@@ -499,6 +499,81 @@ delete_rec () {
         kubectl get svc -n $INSTALL_NAMESPACE
         echo "${YELLOW}Checking the REC secrets are cleaned up${NC}"
         kubectl get secret -n $INSTALL_NAMESPACE
+    done
+}
+
+# Test case functions
+takedown_rec () {
+    for i in "${!TARGET_K8S_CONTEXTS[@]}"
+    do
+        echo "Changing context to K8s cluster ${TARGET_K8S_CONTEXTS[i]}"
+        kubectl config use-context ${TARGET_K8S_CONTEXTS[i]}
+        echo
+        TARGET_REC=$(kubectl get rec -n $INSTALL_NAMESPACE -ojsonpath='{.items..metadata.name}')
+        echo "${YELLOW}Putting Redis Enterprise Cluster named $TARGET_REC in namespace $INSTALL_NAMESPACE into recovery mode${NC}"
+        kubectl patch rec $TARGET_REC -n $INSTALL_NAMESPACE --type merge --patch '{"spec":{"clusterRecovery":true}}'
+        echo "${BLUE}Sleeping for 3 seconds before performing checks${NC}"
+        sleep 3
+        echo       
+        echo "${YELLOW}Check that the REC deployment is in recovery mode${NC}"
+        kubectl get rec -n $INSTALL_NAMESPACE
+        echo
+        echo "${YELLOW}Check that the local database svc endpoints are empty to ensure that the database has been taken down${NC}" 
+        kubectl get endpoints $REAADB_NAME -n $INSTALL_NAMESPACE
+        echo "${YELLOW}Check that the federated database svc endpoints are properly updated${NC}"
+        kubectl get endpoints $REAADB_NAME-federated -n $INSTALL_NAMESPACE
+        echo 
+    done
+}
+
+recover_db () {
+    for i in "${!TARGET_K8S_CONTEXTS[@]}"
+    do
+        echo
+        echo "Changing context to K8s cluster ${TARGET_K8S_CONTEXTS[i]}"
+        kubectl config use-context ${TARGET_K8S_CONTEXTS[i]}
+        echo
+        TARGET_REC=$(kubectl get rec -n redis -ojsonpath='{.items..metadata.name}')
+        echo "${YELLOW}Checking that the REC has fully recovered the pods:"
+        START_TIME=$(date +%s)
+        MAX_TIME=$((10*60))
+        SPEC_STATUS=""
+        # Run the loop until SPEC_STATUS is 'Running' or 10 minutes have passed
+        until [ "$SPEC_STATUS" = "Running" ] || [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; do
+            echo "${YELLOW}Checking status of Redis pods${NC}"
+            echo "${CYAN}Running: kubectl get pods -n $INSTALL_NAMESPACE${NC}"
+            kubectl get pods -n $INSTALL_NAMESPACE
+            # Update SPEC_STATUS
+            SPEC_STATUS=$(kubectl get rec -n $INSTALL_NAMESPACE -ojsonpath='{.items..status.state}')
+            # Sleeping for 10 seconds before checking again
+            echo "${BLUE}The REC status is $SPEC_STATUS, sleeping for 10 seconds and checking again${NC}"
+            sleep 10
+            echo
+        done
+        if [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; then
+            echo "${RED}Stopped checking REC status because 10 minutes have passed, you need to debug why${NC}"
+            echo "${RED}The script will fully exit here so that you can manually debug further${NC}"
+            exit 1
+        else
+            echo "${GREEN}Stopped checking because REC status is 'Running' and it is fully recovered, going to proceed with next steps${NC}"
+        fi
+        echo "${YELLOW}Exec into $TARGET_REC-0 pod in $INSTALL_NAMESPACE namespace and checking database list to be recovered${NC}"
+        kubectl exec -it $TARGET_REC-0 -n $INSTALL_NAMESPACE -c redis-enterprise-node -- bash -c 'rladmin recover list'
+        echo
+        echo "${YELLOW}Exec into $TARGET_REC-0 pod in $INSTALL_NAMESPACE namespace and recover database${NC}"
+        kubectl exec -it $TARGET_REC-0 -n $INSTALL_NAMESPACE -c redis-enterprise-node -- bash -c 'rladmin recover all'
+        echo
+        echo "${BLUE}Sleeping 5 seconds to allow database shards to recover${NC}"
+        sleep 5
+        echo
+        echo "${YELLOW}Exec into $TARGET_REC-0 pod in $INSTALL_NAMESPACE namespace and check shards are all showing${NC} ${GREEN}STATUS:OK${NC}"
+        kubectl exec -it $TARGET_REC-0 -n $INSTALL_NAMESPACE -c redis-enterprise-node -- bash -c 'rladmin status shards'
+        echo
+        echo "${YELLOW}Check that the local database svc endpoints are populated once again${NC}"
+        kubectl get endpoints $REAADB_NAME -n $INSTALL_NAMESPACE
+        echo "${YELLOW}Check that the federated database svc endpoints are properly updated${NC}"
+        kubectl get endpoints $REAADB_NAME-federated -n $INSTALL_NAMESPACE
+        echo
     done
 }
 
