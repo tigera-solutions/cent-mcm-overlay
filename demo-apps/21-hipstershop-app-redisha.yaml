@@ -523,7 +523,7 @@ spec:
         - containerPort: 7070
         env:
         - name: REDIS_ADDR
-          value: "reaadb-testdb.redis:11069"
+          value: "<REAADB_NAME>.<INSTALL_NAMESPACE>:<REAADB_PORT>"
         resources:
           requests:
             cpu: 200m
