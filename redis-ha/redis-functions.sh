@@ -33,14 +33,16 @@ install_rec_operator () {
 install_rec_deployment () {
     for i in "${!INSTALL_K8S_CONTEXTS[@]}"
     do
+        REC_NAME=rec-${REGION[i]}
+        REC_POD_REPLICA_COUNT=3
         echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
         kubectl config use-context ${INSTALL_K8S_CONTEXTS[i]}
-        echo "${YELLOW}Installing REC (Redis Enterprise Cluster) in namespace $INSTALL_NAMESPACE${NC}"
+        echo "${YELLOW}Installing REC (Redis Enterprise Cluster) $REC_NAME in namespace $INSTALL_NAMESPACE${NC}"
         kubectl create -f - << EOF
 apiVersion: "app.redislabs.com/v1"
 kind: "RedisEnterpriseCluster"
 metadata:
-  name: ${REC_NAMES[i]}
+  name: $REC_NAME
   namespace: $INSTALL_NAMESPACE
 spec:
   extraLabels:
@@ -93,42 +95,44 @@ create_rerc_configs () {
     echo
     for i in "${!INSTALL_K8S_CONTEXTS[@]}"
     do
+        REC_NAME=rec-${REGION[i]}
+        RERC_NAME=rerc-${REGION[i]}
         echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
         kubectl config use-context ${INSTALL_K8S_CONTEXTS[i]}
-        echo "${YELLOW}Creating secret manifest for REC named ${REC_NAMES[i]} for region ${REGION[i]} and namespace $INSTALL_NAMESPACE${NC}"
-        REC_USERNAME=$(kubectl -n $INSTALL_NAMESPACE get secret ${REC_NAMES[i]} -o jsonpath='{.data.username}')
-        REC_PASSWORD=$(kubectl -n $INSTALL_NAMESPACE get secret ${REC_NAMES[i]} -o jsonpath='{.data.password}')
-        cat > $SCRIPT_DIR/_output/redis-enterprise-${RERC_NAMES[i]}-secret.yaml << EOF
+        echo "${YELLOW}Creating secret manifest for REC named $REC_NAME for region ${REGION[i]} and namespace $INSTALL_NAMESPACE${NC}"
+        REC_USERNAME=$(kubectl -n $INSTALL_NAMESPACE get secret $REC_NAME -o jsonpath='{.data.username}')
+        REC_PASSWORD=$(kubectl -n $INSTALL_NAMESPACE get secret $REC_NAME -o jsonpath='{.data.password}')
+        cat > $SCRIPT_DIR/_output/redis-enterprise-$RERC_NAME-secret.yaml << EOF
 apiVersion: v1
 data:
   password: $REC_PASSWORD
   username: $REC_USERNAME
 kind: Secret
 metadata:
-  name: redis-enterprise-${RERC_NAMES[i]}
+  name: redis-enterprise-$RERC_NAME
   namespace: $INSTALL_NAMESPACE
 type: Opaque
 EOF
-        echo "${YELLOW}Creating RERC manifest for ${REGION[i]} using the secret named redis-enterprise-${RERC_NAMES[i]}${NC}"
-        cat > $SCRIPT_DIR/_output/${RERC_NAMES[i]}.yaml << EOF
+        echo "${YELLOW}Creating RERC manifest for ${REGION[i]} using the secret named redis-enterprise-$RERC_NAME${NC}"
+        cat > $SCRIPT_DIR/_output/$RERC_NAME.yaml << EOF
 apiVersion: app.redislabs.com/v1alpha1
 kind: RedisEnterpriseRemoteCluster
 metadata:
-  name: ${RERC_NAMES[i]}
+  name: $RERC_NAME
   namespace: $INSTALL_NAMESPACE
 spec:
-  recName: ${REC_NAMES[i]}
+  recName: $REC_NAME
   recNamespace: $INSTALL_NAMESPACE
-  apiFqdnUrl: ${RERC_NAMES[i]}.$INSTALL_NAMESPACE
+  apiFqdnUrl: $RERC_NAME.$INSTALL_NAMESPACE
   dbFqdnSuffix: -db-${REGION[i]}.$INSTALL_NAMESPACE
-  secretName: redis-enterprise-${RERC_NAMES[i]}
+  secretName: redis-enterprise-$RERC_NAME
 EOF
         echo "${YELLOW}Creating RERC API endpoint federated services manifest${NC}"
-        cat > $SCRIPT_DIR/_output/${RERC_NAMES[i]}-fedsvc.yaml << EOF
+        cat > $SCRIPT_DIR/_output/$RERC_NAME-fedsvc.yaml << EOF
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${RERC_NAMES[i]}
+  name: $RERC_NAME
   namespace: $INSTALL_NAMESPACE
   annotations:
     federation.tigera.io/serviceSelector: redis-enterprise-api-region == "${REGION[i]}"
@@ -155,17 +159,40 @@ apply_rerc_configs () {
         kubectl config use-context ${INSTALL_K8S_CONTEXTS[i]}
         for j in "${!INSTALL_K8S_CONTEXTS[@]}"
         do
-            echo "${YELLOW}Applying the secret manifest ${REC_NAMES[j]}-secret${NC}"
-            kubectl create -f $SCRIPT_DIR/_output/redis-enterprise-${RERC_NAMES[j]}-secret.yaml
+            REC_NAME=rec-${REGION[j]}
+            RERC_NAME=rerc-${REGION[j]}
+            echo "${YELLOW}Applying the secret manifest redis-enterprise-$RERC_NAME-secret.yaml${NC}"
+            kubectl create -f $SCRIPT_DIR/_output/redis-enterprise-$RERC_NAME-secret.yaml
             echo
-            echo "${YELLOW}Applying the RERC manifest ${RERC_NAMES[j]}${NC}"
-            kubectl create -f $SCRIPT_DIR/_output/${RERC_NAMES[j]}.yaml
+            echo "${YELLOW}Applying the RERC manifest $RERC_NAME.yaml${NC}"
+            kubectl create -f $SCRIPT_DIR/_output/$RERC_NAME.yaml
             echo
-            echo "${YELLOW}Applying RERC API endpoint federated services manifest for ${RERC_NAMES[j]}${NC}"
-            kubectl create -f $SCRIPT_DIR/_output/${RERC_NAMES[j]}-fedsvc.yaml
+            echo "${YELLOW}Applying RERC API endpoint federated services manifest for $RERC_NAME${NC}"
+            kubectl create -f $SCRIPT_DIR/_output/$RERC_NAME-fedsvc.yaml
+            echo
         done
-        echo "${YELLOW}Checking RERC status${NC}"
-        kubectl get rerc -n $INSTALL_NAMESPACE
+        echo "${YELLOW}Checking RERC status:${NC}"
+        # kubectl get rerc -n $INSTALL_NAMESPACE
+        START_TIME=$(date +%s)
+        MAX_TIME=$((10*60))
+        RERC_STATUS=""
+        RERC_NAME=rerc-${REGION[i]}
+        # Run the loop until RERC_STATUS is 'Active' or 10 minutes have passed
+        until [ "$RERC_STATUS" = "Active" ] || [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; do
+            # Update RERC_STATUS
+            RERC_STATUS=$(kubectl get rerc $RERC_NAME -n $INSTALL_NAMESPACE -ojsonpath='{..status.status}')
+            # Sleeping for 10 seconds before checking again
+            echo "${BLUE}The RERC status is $RERC_STATUS, sleeping for 10 seconds and checking again${NC}"
+            sleep 10
+            echo
+        done
+        if [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; then
+            echo "${RED}Stopped checking RERC status because 10 minutes have passed, you need to debug why${NC}"
+            echo "${RED}The install script will fully exit here so that you can manually debug further as the rest of the steps cannot proceed${NC}"
+            exit 1
+        else
+            echo "${GREEN}Stopped checking because RERC status is 'Active', going to proceed with next steps${NC}"
+        fi
         echo
     done
     for i in "${!INSTALL_K8S_CONTEXTS[@]}"
@@ -209,10 +236,11 @@ spec:
     shardCount: 3
   participatingClusters:  
 EOF
-    for i in "${!RERC_NAMES[@]}"
+    for i in "${!INSTALL_K8S_CONTEXTS[@]}"
     do
+        RERC_NAME=rerc-${REGION[i]}
         cat >> $SCRIPT_DIR/_output/$REAADB_NAME.yaml << EOF
-      - name: ${RERC_NAMES[i]}
+      - name: $RERC_NAME
 EOF
     done
     echo "${YELLOW}Creating the REAADB replication endpoint federated services manifests${NC}"
@@ -235,6 +263,7 @@ spec:
   type: ClusterIP
 EOF
     done
+    echo
 }
 
 # The main REAADB CR manifest only needs to be applied once on one cluster
@@ -253,17 +282,17 @@ apply_reaadb_configs () {
         echo
     done
     echo
-    echo "${YELLOW}Changing context back to K8s cluster ${INSTALL_K8S_CONTEXTS[0]}${NC}"
+    echo "Changing context back to K8s cluster ${INSTALL_K8S_CONTEXTS[0]}"
     kubectl config use-context ${INSTALL_K8S_CONTEXTS[0]}
     echo "${YELLOW}Finally applying the REAADB CR manifest${NC}"
     kubectl create -f $SCRIPT_DIR/_output/$REAADB_NAME.yaml
+    echo
     echo "${YELLOW}Checking REAADB status${NC}"
     START_TIME=$(date +%s)
     MAX_TIME=$((10*60))
     REAADB_STATUS=""
     # Run the loop until REAADB_STATUS is 'Running' or 10 minutes have passed
     until [ "$REAADB_STATUS" = "active" ] || [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; do
-        echo "${YELLOW}Checking status of the REAADB${NC}"
         # Update REAADB_STATUS
         REAADB_STATUS=$(kubectl get reaadb $REAADB_NAME -n $INSTALL_NAMESPACE -ojsonpath='{..status.status}')
         # Sleeping for 10 seconds before checking again
@@ -277,6 +306,7 @@ apply_reaadb_configs () {
         exit 1
     else
         echo "${GREEN}Stopped checking because REAADB status is 'active', going to proceed with next steps${NC}"
+        echo
     fi
     START_TIME=$(date +%s)
     MAX_TIME=$((5*60))
@@ -288,7 +318,6 @@ apply_reaadb_configs () {
         # Sleeping for 10 seconds before checking again
         echo "${BLUE}The $REAADB_NAME local service hasn't been created yet, sleeping for 10 seconds and checking again${NC}"
         sleep 10
-        echo
     done
     if [ $(( $(date +%s) - START_TIME )) -ge $MAX_TIME ]; then
         echo "${RED}Stopped checking REAADB service status because 5 minutes have passed, you need to debug why${NC}"
@@ -297,10 +326,9 @@ apply_reaadb_configs () {
     else
         echo "${GREEN}Stopped checking because the $REAADB_NAME local service now exists, going to proceed with next steps${NC}"
     fi
-    # echo "${BLUE}Sleeping for 10 seconds for the resources to be created${NC}"
-    # sleep 10
     echo
-    echo "${YELLOW}Patching the local $REAADB_NAME service with the correct label to enable federation${NC}"
+    echo "${YELLOW}Patching the local $REAADB_NAME service with the correct label to enable federation:${NC}"
+    echo
     for i in "${!INSTALL_K8S_CONTEXTS[@]}"
     do
         echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
@@ -323,7 +351,8 @@ apply_reaadb_configs () {
     # echo "${BLUE}Sleeping for 10 seconds for replication status to be updated${NC}"
     # sleep 10
     echo
-    echo "${YELLOW}Waiting for the REAADB replication status to come up${NC}"
+    echo "${YELLOW}Waiting for the REAADB replication status to come up:${NC}"
+    echo
     START_TIME=$(date +%s)
     MAX_TIME=$((10*60))
     REAADB_REP_STATUS=""
@@ -332,7 +361,7 @@ apply_reaadb_configs () {
         # Update REAADB_REP_STATUS
         REAADB_REP_STATUS=$(kubectl get reaadb $REAADB_NAME -n $INSTALL_NAMESPACE -ojsonpath='{..status.replicationStatus}')
         # Sleeping for 10 seconds before checking again
-        echo "${BLUE}The replication status for $REAADB_NAME is $REAADB_REP_STATUS, sleeping for 10 seconds and checking again${NC}"
+        echo "${BLUE}The replication status for REAADB $REAADB_NAME is $REAADB_REP_STATUS, sleeping for 10 seconds and checking again${NC}"
         sleep 10
         echo
     done
@@ -459,22 +488,26 @@ delete_rerc () {
         echo "${YELLOW}Deleting the RERC CRs${NC}"
         for j in "${!INSTALL_K8S_CONTEXTS[@]}"
         do
-            echo "${YELLOW}Deleting RERC named ${RERC_NAMES[j]} in $INSTALL_NAMESPACE namespace${NC}"
-            kubectl delete rerc -n $INSTALL_NAMESPACE ${RERC_NAMES[j]}
+            RERC_NAME=rerc-${REGION[j]}
+            echo "${YELLOW}Deleting RERC named $RERC_NAME in $INSTALL_NAMESPACE namespace${NC}"
+            kubectl delete rerc -n $INSTALL_NAMESPACE $RERC_NAME
         done
         echo
         echo "${YELLOW}Deleting the RERC API endpoint federated services${NC}"
         for j in "${!INSTALL_K8S_CONTEXTS[@]}"
         do
-            echo "${YELLOW}Deleting the RERC federated svc ${RERC_NAMES[j]} in $INSTALL_NAMESPACE namespace${NC}"
-            kubectl delete svc -n $INSTALL_NAMESPACE ${RERC_NAMES[j]}
+            RERC_NAME=rerc-${REGION[j]}
+            echo "${YELLOW}Deleting the RERC federated svc $RERC_NAME in $INSTALL_NAMESPACE namespace${NC}"
+            kubectl delete svc -n $INSTALL_NAMESPACE $RERC_NAME
         done
         echo
         echo "${YELLOW}Deleting the RERC secrets${NC}"
         for j in "${!INSTALL_K8S_CONTEXTS[@]}"
         do
-            echo "${YELLOW}Deleting the RERC secret ${REC_NAMES[j]}-secret in $INSTALL_NAMESPACE namespace${NC}"
-            kubectl delete secret -n $INSTALL_NAMESPACE redis-enterprise-${RERC_NAMES[j]}
+            REC_NAME=rec-${REGION[j]}
+            RERC_NAME=rerc-${REGION[j]}
+            echo "${YELLOW}Deleting the RERC secret $REC_NAME-secret in $INSTALL_NAMESPACE namespace${NC}"
+            kubectl delete secret -n $INSTALL_NAMESPACE redis-enterprise-$RERC_NAME
         done
         echo
         echo "${YELLOW}Checking that RERC objects are cleaned up${NC}"
@@ -483,22 +516,25 @@ delete_rerc () {
         kubectl get svc -n $INSTALL_NAMESPACE
         echo "${YELLOW}Checking that the RERC secrets are cleaned up${NC}"
         kubectl get secret -n $INSTALL_NAMESPACE
+        echo
     done
 }
 
 delete_rec () {
     for i in "${!INSTALL_K8S_CONTEXTS[@]}"
     do
+        REC_NAME=rec-${REGION[i]}
         echo "Changing context to K8s cluster ${INSTALL_K8S_CONTEXTS[i]}"
         kubectl config use-context ${INSTALL_K8S_CONTEXTS[i]}
         echo "${YELLOW}Deleting REC objects${NC}"
-        kubectl delete rec -n $INSTALL_NAMESPACE ${REC_NAMES[i]}
+        kubectl delete rec -n $INSTALL_NAMESPACE $REC_NAME
         echo "${YELLOW}Checking the REC objects are cleaned up${NC}"
         kubectl get rec -n $INSTALL_NAMESPACE
         echo "${YELLOW}Checking the REC svcs are cleaned up${NC}"
         kubectl get svc -n $INSTALL_NAMESPACE
         echo "${YELLOW}Checking the REC secrets are cleaned up${NC}"
         kubectl get secret -n $INSTALL_NAMESPACE
+        echo
     done
 }
 
