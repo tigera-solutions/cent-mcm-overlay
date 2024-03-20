@@ -104,6 +104,7 @@ Now we will takedown the local cluster database and service to simulate a databa
   reaadb-testdb-federated   172.16.27.222:11069,172.17.106.216:11069   32h
   ```
 
+[:arrow_right: Module 10 - Cleanup](module-10-cleanup.md)  
 [:arrow_left: Module 9.2 - Setup Redis HA Demo App (Hipstershop)](module-9.2-setup-redis-ha-demo-app.md)  
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)

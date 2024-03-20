@@ -31,6 +31,7 @@ Module 8 - [Testing Federated Service](modules/module-8-test-fed-svc.md)
 Module 9.1 - [Setup Redis HA Database](modules/module-9.1-setup-redis-ha-db.md)  
 Module 9.2 - [Setup Redis HA Demo App (Hipstershop)](modules/module-9.2-setup-redis-ha-demo-app.md)  
 Module 9.3 - [Test Redis HA Demo App (Hipstershop)](modules/module-9.3-test-redis-ha-demo-app.md)  
+Module 10 - [Cleanup](modules/module-10-cleanup.md)
 
 ### Useful links
 
