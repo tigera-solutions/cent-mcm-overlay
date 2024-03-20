@@ -12,13 +12,22 @@ kubectl delete -f demo-apps/20-hipstershop-app.yaml
 
 ## Install Redis HA Hipstershop manifests
 
-- First, source your ```redis-ha/setup.env``` variables in order to substitute the ```REAADB_NAME``` local cluster database service into the manifest for the ```cartservice``` Deployment to point to.
+- Select one of the clusters to install the Hipstershop manifests to and switch to that K8s context
+  
+  For example:
+
+  ```bash
+  kubectl config get-contexts
+  kubectl config use-context <context-name>
+  ```
+
+- Source the ```redis-ha/setup.env``` variables in order to substitute the ```REAADB_NAME``` local cluster database service into the manifest for the ```cartservice``` Deployment to point to.
   
   ```bash
   source redis-ha/setup.env
   ```
 
-- Then substitute the values into the manifest and deploy
+- Then substitute the values into the manifest and deploy onto the cluster
 
   ```bash
   sed -e "s?<REAADB_NAME>?$REAADB_NAME?g" \
@@ -48,6 +57,16 @@ kubectl delete -f demo-apps/20-hipstershop-app.yaml
   shippingservice         shippingservice-5559f5655b-t2fjs         1/1     Running   0          4m51s
   ```  
 
+- Check that the ```cartservice``` pod is using the local REAADB service:
+
+  ```bash
+  kubectl describe pods -n cartservice cartservice-7fc64f54d6-wf748 | grep REDIS_ADDR 
+  ```
+
+  ```bash
+  REDIS_ADDR:  reaadb-testdb.redis:11069
+  ```
+
 - Check that the ```frontend-external``` ```LoadBalancer``` service got provisioned:
   
   ```bash
@@ -61,6 +80,12 @@ kubectl delete -f demo-apps/20-hipstershop-app.yaml
 
 - Check that you can access the Hipsterhop UI in a browser using the ```LoadBalancer``` svc URL
 
-[:arrow_left: Module 9.1 - Setup Redis HA](module-9.1-setup-redis-ha-db.md)  
+- Test the application flow:
+  - Click on items
+  - Add to Cart
+  - Place Order
+
+[:arrow_right: Module 9.3 - Test Redis HA Demo App (Hipstershop)](module-9.3-test-redis-ha-demo-app.md)  
+[:arrow_left: Module 9.1 - Setup Redis HA Database](module-9.1-setup-redis-ha-db.md)  
 
 [:leftwards_arrow_with_hook: Back to Main](../README.md)
