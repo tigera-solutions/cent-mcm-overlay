@@ -19,8 +19,6 @@ Redis Enterprise for Kubernetes uses an operator-based model of deployment (like
   - ```INSTALL_K8S_CONTEXTS``` is an array containing the K8s context names of all the clusters to install on, this assumes that the user's kubeconfig has the contexts that are being used for this setup. This can be seen by running ```kubectl config get-contexts```
   - ```REGION``` is an array containing the region of each EKS cluster deployed by the user. Ensure that if the clusters are in the same region, AZ is used instead to keep the values unique.
   - ```INSTALL_NAMESPACE``` is the namespace on all clusters that all resources will be created in
-  - ```REC_NAMES``` is an array of RECs per cluster and can follow the same region naming to keep the naming consistent across clusters
-  - ```RERC_NAMES``` is an array of RERCs per cluster and can follow the same region naming to keep the naming consistent across clusters
   - ```REAADB_NAME``` is the name of the active-active database to be created in all clusters. The database as well as accompanying federated services will get created with this name.The REAADB will be created with the same name in all clusters as per the design.
   - ```REAADB_PORT``` is the port of the ClusterIP of REAADB as well as the accompanying federated service. Can be left as default or changed as needed.
 - Run the install script: ```bash redis-ha/install-redis.sh```
@@ -105,7 +103,7 @@ Redis Enterprise for Kubernetes uses an operator-based model of deployment (like
   "CA"
   ```
 
-This quick test validates that the database replication is working across the clusters and also validates that the federated service endpoints are working correctly. The next module uses the federated database service ```<REAADB_NAME>-federated" in the demo Google Hipstershop application to prove the Redis HA usecase.
+This quick test validates that the database replication is working across the clusters and also validates that the federated service endpoints are working correctly. The next module uses the federated database service named with the format ```<REAADB_NAME>-federated" in the demo Google Hipstershop application to prove the Redis HA usecase.
 
 [:arrow_right: Module 9.2 - Setup Redis HA Demo App (Hipstershop)](module-9.2-setup-redis-ha-demo-app.md)  
 [:arrow_left: Module 8 - Testing Federated Service](module-8-test-fed-svc.md)  
