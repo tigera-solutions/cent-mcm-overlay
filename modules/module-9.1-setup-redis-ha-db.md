@@ -12,6 +12,33 @@ Redis Enterprise for Kubernetes uses an operator-based model of deployment (like
 - RERC (Redis Enterprise Remote Cluster) - The CR object that refers to a local or remote REC (depending on configuration) and required for setting up multi-cluster REC configuration.
 - REAADB (Redis Enterprise Active-Active Database) - The CR object that refers to the actual active-active database that is created across the RECs in the multi-cluster setup. There can be multiple databases, but this example only creates one for demostrating the scenario.
 
+## Pre-requisite
+
+The REC pods require backing PVs and as part of the installation process PVC requests are generated. In our EKS clusters, we should have EBS CSI provisioner setup so that the EBS PVs can be automatically provisioned as part of the process.
+
+### How to install the [EBS CSI driver on EKS](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
+
+One quick way of doing this is with using your AWS access key id and secret access key to create the ```Secret``` object for the EBS CSI controller:
+  
+- Export the vars:
+
+  ```bash
+  export AWS_ACCESS_KEY_ID=<my-access-key-id>
+  export AWS_SECRET_ACCESS_KEY=<my-secret-access-key>
+  ```
+
+- Configure and create the aws-secret ```Secret```:
+  
+  ```bash
+  kubectl create secret generic aws-secret --namespace kube-system --from-literal "key_id=${AWS_ACCESS_KEY_ID}" --from-literal "access_key=${AWS_SECRET_ACCESS_KEY}"
+  ```
+
+- Install the CSI driver:
+
+  ```bash
+  kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.29"
+  ```
+
 ## Installation
 
 - Copy the example env variables file ```cp redis-ha/setup.env.example redis-ha/setup.env```
