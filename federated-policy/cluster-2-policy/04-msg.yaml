@@ -39,6 +39,11 @@ spec:
       source: {}
       destination:
         namespaceSelector: projectcalico.org/name == "redis-cart"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "redis"
   types:
     - Egress
     - Ingress
@@ -150,9 +155,9 @@ spec:
       source: 
         nets:
           - 0.0.0.0/0
+      destination:
         ports:
           - '8080'
-      destination: {}
   egress:
     - action: Allow
       protocol: TCP
