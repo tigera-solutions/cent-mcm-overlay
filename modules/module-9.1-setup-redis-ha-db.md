@@ -44,7 +44,7 @@ The other quick (but less secure and more open) way of doing this is with using 
 ## Installation
 
 - Copy the example env variables file ```cp redis-ha/setup.env.example redis-ha/setup.env```
-- Setup the variables in the ```setup.env``` as follows:
+- Setup the variables in the ```redis-ha/setup.env``` as follows:
   - ```INSTALL_K8S_CONTEXTS``` is an array containing the K8s context names of all the clusters to install on, this assumes that the user's kubeconfig has the contexts that are being used for this setup. This can be seen by running ```kubectl config get-contexts```
   - ```REGION``` is an array containing the region of each EKS cluster deployed by the user. Ensure that if the clusters are in the same region, AZ is used instead to keep the values unique.
   - ```INSTALL_NAMESPACE``` is the namespace on all clusters that all resources will be created in
