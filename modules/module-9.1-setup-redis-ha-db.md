@@ -18,7 +18,9 @@ The REC pods require backing PVs and as part of the installation process PVC req
 
 ### How to install the [EBS CSI driver on EKS](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
 
-One quick way of doing this is with using your AWS access key id and secret access key to create the ```Secret``` object for the EBS CSI controller:
+The recommended way to deploy the EBS CSI controller on EKS clusters is to follow the method to [Add it as an EKS add-on](https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html). This requires an IAM OIDC provider to be configured for the cluster and is the best way to deploy from an IAM and security standpoint.
+
+The other quick (but less secure and more open) way of doing this is with using your AWS access key id and secret access key to create a ```Secret``` object for the EBS CSI controller install:
   
 - Export the vars:
 
