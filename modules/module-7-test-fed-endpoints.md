@@ -37,7 +37,7 @@ EOF
 ```
 
 ```bash
-kubectl delete -f cluster-1-policy/01-default-deny.yaml
+kubectl delete -f federated-policy/cluster-1-policy/01-default-deny.yaml
 ```
 
 ### Cluster-2
@@ -69,7 +69,7 @@ EOF
 ```
 
 ```bash
-kubectl delete -f cluster-2-policy/01-default-deny.yaml
+kubectl delete -f federated-policy/cluster-2-policy/01-default-deny.yaml
 ```
 
 ## Test Policies
