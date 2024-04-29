@@ -76,7 +76,7 @@ Now we will takedown the local cluster database and service to simulate a databa
   deployment.apps/cartservice edited
   ```
 
-- This will kick off a new ```checkoutservice``` pod with the new value, and refreshing the Hipstershop UI you will be able to see that the cart status is intact and able to run through the app flow again as it has recovered. This is because the federated service still populated the 'good' endpoints from remote clusters which the application is able to leverage without being aware that it is actually referencing a remote endpoint, thus proving the federated HA use-case for Redis.
+- This will kick off a new ```cartservice``` pod with the new value, and refreshing the Hipstershop UI you will be able to see that the cart status is intact and able to run through the app flow again as it has recovered. This is because the federated service still populated the 'good' endpoints from remote clusters which the application is able to leverage without being aware that it is actually referencing a remote endpoint, thus proving the federated HA use-case for Redis.
 
 ## Recover REAADB from recovery mode
 
