@@ -44,7 +44,7 @@ spec:
     - action: Allow
       source: {}
       destination:
-        selector: zone == "app1" || zone == "app2" || zone == "shared"
+        selector: zone == "app1" || zone == "app2" || zone == "shared" || component == "apiserver""
   doNotTrack: false
   applyOnForward: false
   preDNAT: false

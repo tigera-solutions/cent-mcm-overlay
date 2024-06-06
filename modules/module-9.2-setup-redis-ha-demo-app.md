@@ -36,6 +36,13 @@ kubectl delete -f demo-apps/20-hipstershop-app.yaml
     demo-apps/21-hipstershop-app-redisha.yaml | kubectl apply -f -
   ```
 
+- Apply the network policies manifest for miorosegmentation between the different services and also to allow traffic to the Redis-deployed namespace by substituting the values into the manifest:
+  
+  ```bash
+  sed -e "s?<INSTALL_NAMESPACE>?$INSTALL_NAMESPACE?g" \
+    federated-policy/cluster-2-policy/05-msg-redisha.yaml | kubectl apply -f -
+  ```
+
 - Check that all the pods are up
   
   ```bash

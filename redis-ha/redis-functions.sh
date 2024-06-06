@@ -24,6 +24,8 @@ install_rec_operator () {
         kubectl -n $INSTALL_NAMESPACE apply -f https://raw.githubusercontent.com/RedisLabs/redis-enterprise-k8s-docs/$VERSION/bundle.yaml
         echo "Sleeping 3 seconds for CRDs to be properly created"
         sleep 3
+        echo "Patching labels to allow through network policy"
+        kubectl patch deployment redis-enterprise-operator -n $INSTALL_NAMESPACE --type='json' -p='[{"op": "add", "path": "/spec/template/metadata/labels/zone", "value": "shared"}]'
         echo
     done
 }
@@ -47,6 +49,7 @@ metadata:
 spec:
   extraLabels:
       redis-enterprise-api-region: ${REGION[i]}
+      zone: shared
   nodes: $REC_POD_REPLICA_COUNT
   uiServiceType: LoadBalancer
   redisEnterpriseNodeResources:
