@@ -1,0 +1,315 @@
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.adservice
+  namespace: adservice
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "adservice"
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "frontend"
+  types:
+    - Ingress
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.cartservice
+  namespace: cartservice
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "cartservice"
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "checkoutservice"
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "frontend"
+  egress:
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "<INSTALL_NAMESPACE>"
+  types:
+    - Egress
+    - Ingress
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.checkoutservice
+  namespace: checkoutservice
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "checkoutservice"
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "frontend"
+  egress:
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "productcatalogservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "currencyservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "cartservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "emailservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "paymentservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "shippingservice"
+  types:
+    - Egress
+    - Ingress
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.currencyservice
+  namespace: currencyservice
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "currencyservice"
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "checkoutservice"
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "frontend"
+  types:
+    - Ingress
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.emailservice
+  namespace: emailservice
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "emailservice"
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "checkoutservice"
+  types:
+    - Ingress
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.frontend
+  namespace: frontend
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "frontend"
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source: 
+        namespaceSelector: projectcalico.org/name == "loadgenerator"
+      destination: {}
+    - action: Allow
+      protocol: TCP
+      source: 
+        nets:
+          - 0.0.0.0/0
+      destination:
+        ports:
+          - '8080'
+  egress:
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "productcatalogservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "checkoutservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "currencyservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "cartservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "recommendationservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "adservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "shippingservice"
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        nets:
+          - 10.0.0.0/8
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+        ports:
+          - '8080'
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        ports:
+          - '80'
+  types:
+    - Egress
+    - Ingress
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.loadgenerator
+  namespace: loadgenerator
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "loadgenerator"
+  serviceAccountSelector: ''
+  egress:
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "frontend"
+  types:
+    - Egress
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.paymentservice
+  namespace: paymentservice
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "paymentservice"
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "checkoutservice"
+  types:
+    - Ingress
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.productcatalogservice
+  namespace: productcatalogservice
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "productcatalogservice"
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "checkoutservice"
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "frontend"
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "recommendationservice"
+  types:
+    - Ingress
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.recommendationservice
+  namespace: recommendationservice
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "recommendationservice"
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "frontend"
+  egress:
+    - action: Allow
+      protocol: TCP
+      source: {}
+      destination:
+        namespaceSelector: projectcalico.org/name == "productcatalogservice"
+  types:
+    - Egress
+    - Ingress
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name:  apps-msg.shippingservice
+  namespace: shippingservice
+spec:
+  tier:  apps-msg
+  selector: projectcalico.org/namespace == "shippingservice"
+  serviceAccountSelector: ''
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "checkoutservice"
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: projectcalico.org/name == "frontend"
+  types:
+    - Ingress
