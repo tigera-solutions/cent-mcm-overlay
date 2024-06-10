@@ -67,7 +67,7 @@ kubectl delete -f demo-apps/20-hipstershop-app.yaml
 - Check that the ```cartservice``` pod is using the local REAADB service:
 
   ```bash
-  kubectl describe pods -n cartservice cartservice-7fc64f54d6-wf748 | grep REDIS_ADDR 
+  kubectl describe pods -n cartservice $(kubectl get pod -n cartservice -l app=cartservice -ojsonpath='{.items[0].metadata.name}') | grep REDIS_ADDR 
   ```
 
   ```bash

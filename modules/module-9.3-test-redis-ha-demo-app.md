@@ -80,6 +80,7 @@ Now we will takedown the local cluster database and service to simulate a databa
 
 ## Recover REAADB from recovery mode
 
+- Set the ```setup.env``` variable ```TARGET_K8S_CONTEXTS``` to the K8s context of the cluster whose Redis database is in ```Recovery``` mode (or been taken down in the previous example while testing the HA use-case).
 - Run the script: ```bash redis-ha/recover-db.sh```
 - This should finish recovering all shards
 - Check both the local and federated REAADB endpoints to ensure that all the endpoints are populated again:
