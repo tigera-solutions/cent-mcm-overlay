@@ -94,7 +94,6 @@ kubectl delete -f demo-apps/20-hipstershop-app.yaml
 
 ![hipstershop_usage](https://github.com/tigera-solutions/cent-mcm-overlay/assets/117195889/18d8e633-f8da-4ca5-aaeb-9b8bb0da1f6c)
 
-
 [:arrow_right: Module 9.3 - Test Redis HA Demo App (Hipstershop)](module-9.3-test-redis-ha-demo-app.md)  
 [:arrow_left: Module 9.1 - Setup Redis HA Database](module-9.1-setup-redis-ha-db.md)  
 
