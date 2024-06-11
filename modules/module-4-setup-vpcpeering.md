@@ -58,9 +58,10 @@ aws ec2 create-route --region ca-central-1 --route-table-id $ROUTE_ID_CA --desti
 aws ec2 create-route --region us-east-1 --route-table-id $ROUTE_ID_CB --destination-cidr-block "192.168.0.0/24" --vpc-peering-connection-id $PEER_ID
 ```
 
-## Setup Security Groups
+## Setup Security Groups and disable interface source-destination check
 
 - Ensure that as a minimum VXLAN UDP port 4789 is opened on both clusters for each other's VPC CIDR, and possibly ICMP if you want to run ping tests between pods in the two clusters.
+- Ensure that [source-destination check is disabled](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#EIP_Disable_SrcDestCheck) in the interfaces of all of the worker nodes so that traffic originating from a peered VPC subnet is not dropped by the receiving node interface in a local VPC.
 
 [:arrow_right: Module 5 - Setup VXLAN Cluster Mesh](module-5-setup-clustermesh.md)
 
