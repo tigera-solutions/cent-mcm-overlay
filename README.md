@@ -1,7 +1,5 @@
 # EKS Cluster mesh setup in Overlay/VXLAN mode on Calico Enterprise/Cloud
 
-> :warning: **This repo is purely a work-in-progress(WIP) and is in active development. Other than contributors, anyone else should probably not try the stuff in this repo and expect it to work as is until it's finished and ready!**
-
 ## Overview
 
 In this EKS-focused scenario, you will learn how to implement Calico Cluster Mesh in VXLAN/overlay mode in order to achieve policy federation across clusters as well as federate services across clusters to achieve high availability.
