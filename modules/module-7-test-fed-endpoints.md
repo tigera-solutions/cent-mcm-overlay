@@ -93,7 +93,7 @@ kubectl delete -f federated-policy/cluster-2-policy/01-default-deny.yaml
 - On cluster-2, get the IP of one of the ```frontend``` pods in the ```zone == app2``` set of workloads:
   
   ```bash
-  kubectl get pod -A -l zone=app2 -o custom-columns="POD-NAME:.metadata.name,NAMESPACE:.metadata.namespace,IP:.status.podIP,POD-LABELS:.metadata.labels"
+  kubectl get pod -A -l zone=app2 -o custom-columns="POD-NAME:.metadata.name,NAMESPACE:.metadata.namespace,IP:.status.podIP,POD-LABELS:.metadata.labels" | grep frontend
   ```
 
 - On cluster-1, exec into the shell of the ```client``` pod and try to hit the pod IP from the previous step:
