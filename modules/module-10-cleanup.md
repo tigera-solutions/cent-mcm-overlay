@@ -45,7 +45,7 @@ You can choose to either use the specific pieces below to only clean them up to 
 
 - Clean up the EKS clusters using eksctl:
   - Use ```eksctl get cluster --region=<your-region>``` to get the clusters that were spun up as part of this repo.
-  - Then use ```eksctl delete cluster --region=<your-region>``` to delete the cluster. Repeat this for all clusters as needed.
+  - Then use ```eksctl delete cluster --region=<your-region>``` to delete the cluster. Repeat this for all clusters.
 
 [:arrow_left: Module 9.3 - Test Redis HA Demo App (Hipstershop)](module-9.3-test-redis-ha-demo-app.md)  
 
