@@ -10,7 +10,7 @@
 
 - Install the Tigera OSS operator manifest:
 
-  ```kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.2/manifests/tigera-operator.yaml```
+  ```kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml```
 
 - Modify the the Calico Installation CR file as needed with the correct pod CIDR, then install it for cluster-1:
   
@@ -32,7 +32,7 @@
 
 - Install the Tigera OSS operator manifest:
 
-  ```kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.2/manifests/tigera-operator.yaml```
+  ```kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml```
 
 - Modify the the Calico Installation CR file as needed with the correct pod CIDR, then install it for cluster-1:
   
