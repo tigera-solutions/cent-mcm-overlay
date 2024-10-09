@@ -1,3 +1,4 @@
 manifests/_output
 *.env
 redis-ha/_output
+**/*.kubeconfig
