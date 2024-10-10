@@ -79,7 +79,7 @@ chmod +x calicoq
 
 ```bash
 mkdir -p /etc/calico
-vi /etc/calico/calicoq.cfg
+vi /etc/calico/calicoctl.cfg
 ```
 
 - Paste in the following:
