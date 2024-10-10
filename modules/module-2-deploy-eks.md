@@ -12,16 +12,35 @@ In order to be able to setup the VXLAN Cluster Mesh:
 
 Following steps are done for a 2-cluster setup using eksctl from a config file
 
+### Configure variables
+
+- Set `CLSUTER1_REGION` and `CLUSTER2_REGION` variables that will be used to set regions in which you want to build EKS clusters
+
+  ```bash
+  CLUSTER1_REGION=ca-central-1
+  CLUSTER2_REGION=us-east-1
+  EKS_VERSION=1.29
+  ```
+
+- Check available `availability zones` for the regions you plan to build clusters in
+
+  ```bash
+  aws ec2 describe-availability-zones --region $CLUSTER1_REGION --query '*[].ZoneName' --output table
+  aws ec2 describe-availability-zones --region $CLUSTER2_REGION --query '*[].ZoneName' --output table
+  ```
+
+  >make sure that the availability zone (i.e. `a`, `b`, etc.) set in the ```manifests/eksctl-config-cluster1.yaml``` and ```manifests/eksctl-config-cluster2.yaml``` exist for your regions. If not, adjust the manifests' availability zones.
+
 ### Cluster-1 initial setup with ```eksctl```
 
 [Reference](https://docs.tigera.io/calico-enterprise/next/getting-started/install-on-clusters/eks#install-eks-with-calico-networking)
 
-- Change the values under ```manifests/eksctl-config-cluster1.yaml``` as needed. Note the **unique** VPC and svc cidrs.
+- Review ```manifests/eksctl-config-cluster1.yaml``` manifest and adjust the values as needed. Note the **unique** VPC and svc cidrs.
 
-- Create the cluster:
+- Create the cluster in the desired region:
 
   ```bash
-  eksctl create cluster -f manifests/eksctl-config-cluster1.yaml
+  sed -e "s/\${CLUSTER_REGION}/${CLUSTER1_REGION}/g" -e "s/\${EKS_VERSION}/${EKS_VERSION}/g" manifests/eksctl-config-cluster1.yaml | eksctl create cluster -f-
   ```
 
 - Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset:
@@ -39,13 +58,7 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 - Create the cluster:
 
   ```bash
-  eksctl create cluster -f manifests/eksctl-config-cluster2.yaml
-  ```
-
-- Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset:
-
-  ```bash
-  kubectl delete daemonset -n kube-system aws-node
+  sed -e "s/\${CLUSTER_REGION}/${CLUSTER2_REGION}/g" -e "s/\${EKS_VERSION}/${EKS_VERSION}/g" manifests/eksctl-config-cluster2.yaml | eksctl create cluster -f-
   ```
 
 - The next step is to prepare the clusters for installing Calico Cloud or Enterprise:
