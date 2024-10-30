@@ -14,7 +14,7 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 
 ### Configure variables
 
-- Set `CLSUTER1_REGION` and `CLUSTER2_REGION` variables that will be used to set regions in which you want to build EKS clusters
+- Set `CLUSTER1_REGION` and `CLUSTER2_REGION` variables that will be used to set regions in which you want to build EKS clusters
 
   ```bash
   CLUSTER1_REGION=ca-central-1
