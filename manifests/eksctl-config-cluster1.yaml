@@ -1,8 +1,6 @@
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
-availabilityZones:
-  - ${CLUSTER_REGION}a
-  - ${CLUSTER_REGION}b
+availabilityZones: [${CLUSTER_AZS}]
 
 metadata:
   name: cc-eks-mcm1
