@@ -71,7 +71,7 @@ chroot /host
 
 ```bash
 cd /usr/local/bin
-curl -o calicoq -O -L https://downloads.tigera.io/ee/binaries/v3.18.0-1.1/calicoq
+curl -o calicoq -O -L https://downloads.tigera.io/ee/binaries/v3.19.2/calicoq
 chmod +x calicoq
 ```
 
@@ -79,7 +79,7 @@ chmod +x calicoq
 
 ```bash
 mkdir -p /etc/calico
-vi /etc/calico/calicoq.cfg
+vi /etc/calico/calicoctl.cfg
 ```
 
 - Paste in the following:
