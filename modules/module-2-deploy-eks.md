@@ -19,7 +19,7 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
   ```bash
   CLUSTER1_REGION=ca-central-1
   CLUSTER2_REGION=us-east-1
-  EKS_VERSION=1.29
+  EKS_VERSION=1.31
   ```
 
 - Check available `availability zones` for the regions you plan to build clusters in
