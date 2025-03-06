@@ -79,12 +79,18 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 
 - Change the values under ```manifests/eksctl-config-cluster2.yaml``` as needed. Note the **unique** VPC and svc cidrs.
 
-- Create the cluster:
+- Create the cluster in the desired region:
 
   ```bash
   sed -e "s/\${CLUSTER_REGION}/${CLUSTER2_REGION}/g" -e "s/\${EKS_VERSION}/${EKS_VERSION}/g" -e "s/\${CLUSTER_AZS}/${CLUSTER2_AZ_LIST}/g" manifests/eksctl-config-cluster2.yaml | eksctl create cluster -f-
   ```
-
+  
+- Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset:
+  
+  ```bash
+  kubectl delete daemonset -n kube-system aws-node
+  ```
+  
 - The next step is to prepare the clusters for installing Calico Cloud or Enterprise:
 
   - If deciding to go with Calico Enterprise installation, go here:
