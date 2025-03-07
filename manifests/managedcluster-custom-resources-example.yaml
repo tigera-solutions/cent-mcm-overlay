@@ -44,19 +44,19 @@ metadata:
 
 # This section installs and configures Calico Enterprise compliance functionality.
 # For more information, see: https://docs.tigera.io/master/reference/installation/api#operator.tigera.io/v1.Compliance
-apiVersion: operator.tigera.io/v1
-kind: Compliance
-metadata:
-  name: tigera-secure
+# apiVersion: operator.tigera.io/v1
+# kind: Compliance
+# metadata:
+#   name: tigera-secure
 
 ---
 
 # This section installs and configures Calico Enterprise intrusion detection functionality.
 # For more information, see: https://docs.tigera.io/master/reference/installation/api#operator.tigera.io/v1.IntrusionDetection
-apiVersion: operator.tigera.io/v1
-kind: IntrusionDetection
-metadata:
-  name: tigera-secure
+# apiVersion: operator.tigera.io/v1
+# kind: IntrusionDetection
+# metadata:
+#   name: tigera-secure
 
 ---
 
@@ -82,5 +82,14 @@ metadata:
 # For more information, see: https://docs.tigera.io/master/reference/installation/api#operator.tigera.io/v1.PolicyRecommendation
 apiVersion: operator.tigera.io/v1
 kind: PolicyRecommendation
+metadata:
+  name: tigera-secure
+
+---
+
+# Uncomment this section to configure Calico Enterprise Packet Capture functionality.
+# For more information, see: https://docs.tigera.io/master/reference/installation/api#operator.tigera.io/v1.PacketCaptureAPI
+apiVersion: operator.tigera.io/v1
+kind: PacketCaptureAPI
 metadata:
   name: tigera-secure
