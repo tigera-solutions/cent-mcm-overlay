@@ -109,8 +109,6 @@ EOF
   ```
 
   If you prefer to use NodePort or Ingress type svc you can, but it is outside the scope of this README. Refer to the docs above.
-
-  The latest nightly build before v3.18.0-2.0 release had an [issue](https://github.com/tigera/operator/pull/2948) with creating the ```ManagementClusterCR``` as per the docs manifest. The workaround here is kept just for historical purpose. When we get to the step to apply the ```ManagementClusterCR```, change the spec to have the ```.spec.tls.secretName``` set to ```tigera-management-cluster-connection``` , like so (replace ```.spec.address``` with your relevant svc URL and port):
   
   ```bash
   export MGMT_ADDRESS=<address-of-mcm-svc>:<port>
