@@ -76,7 +76,7 @@ aws ec2 authorize-security-group-ingress --region $CLUSTER1_REGION --group-id $S
 aws ec2 authorize-security-group-ingress --region $CLUSTER2_REGION --group-id $SG2_ID --protocol udp --port 4789 --cidr 192.168.0.0/16 2>&1 > /dev/null
 ```
 
-- Ensure that [source-destination check is disabled](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#EIP_Disable_SrcDestCheck) in the interfaces of all of the worker nodes so that traffic originating from a peered VPC subnet is not dropped by the receiving node interface in a local VPC.
+- Ensure that [source-destination check is disabled](https://docs.aws.amazon.com/vpc/latest/userguide/work-with-nat-instances.html#EIP_Disable_SrcDestCheck) in the interfaces of all of the worker nodes so that traffic originating from a peered VPC subnet is not dropped by the receiving node interface in a local VPC.
 
 [:arrow_right: Module 5 - Setup VXLAN Cluster Mesh](module-5-setup-clustermesh.md)
 
