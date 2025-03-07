@@ -18,7 +18,7 @@
 
 ### Linux Users
 
-- If your laptop/machine is Linux-based or you are running a Linux VM that is setup with access to your K8s clusters, then just download calicoq CLI tool from the [Calico docs](https://docs.tigera.io/calico-enterprise/3.15/operations/clis/calicoq/installing#install-calicoq-as-a-binary-on-a-single-host)
+- If your laptop/machine is Linux-based or you are running a Linux VM that is setup with access to your K8s clusters, then just download calicoq CLI tool from the [Calico docs](https://docs.tigera.io/calico-enterprise/3.21/operations/clis/calicoq/installing#install-calicoq-as-a-binary-on-a-single-host)
 - Run the following command against your clusters:
 
 ```bash
@@ -71,7 +71,7 @@ chroot /host
 
 ```bash
 cd /usr/local/bin
-curl -o calicoq -O -L https://downloads.tigera.io/ee/binaries/v3.19.2/calicoq
+curl -o calicoq -O -L https://downloads.tigera.io/ee/binaries/v3.21.0-1.0/calicoq
 chmod +x calicoq
 ```
 
