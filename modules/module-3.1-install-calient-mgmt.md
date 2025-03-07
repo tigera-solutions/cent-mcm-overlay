@@ -11,14 +11,14 @@
 - Apply the operator and prometheus manifests from the repo:
 
   ```bash
-  kubectl create -f https://downloads.tigera.io/ee/v3.18.0-2.0/manifests/tigera-operator.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.21.0-1.0/manifests/tigera-operator.yaml
   ```
 
   ```bash
-  kubectl create -f https://downloads.tigera.io/ee/v3.18.0-2.0/manifests/tigera-prometheus-operator.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.21.0-1.0/manifests/tigera-prometheus-operator.yaml
   ```
 
-- Get a pull secret: The official build uses the quay.io images, so you'll need a pull secret. [This doc](https://tigera.atlassian.net/wiki/spaces/CS/pages/623575278/Creating+Pull+secrets+and+License+files+for+PoC+s) has options on how to generate one as per the official POC/testing process.
+- Get a pull secret: The official build uses the quay.io images, so you'll need a pull secret.
 
 > :warning: **Please make sure to delete pull secrets after testing or if not being used by an active/paying customer or an active POC**
 
