@@ -78,6 +78,8 @@ aws ec2 authorize-security-group-ingress --region $CLUSTER2_REGION --group-id $S
 
 - Ensure that [source-destination check is disabled](https://docs.aws.amazon.com/vpc/latest/userguide/work-with-nat-instances.html#EIP_Disable_SrcDestCheck) in the interfaces of all of the worker nodes so that traffic originating from a peered VPC subnet is not dropped by the receiving node interface in a local VPC.
 
+>Depending on how networking is configured in your VPCs, disabling `src/dest check` may not be necessary.
+
 [:arrow_right: Module 5 - Setup VXLAN Cluster Mesh](module-5-setup-clustermesh.md)
 
 [:arrow_left: Module 3.1 - Install Calico Enterprise](module-3.1-install-calient-mgmt.md)  

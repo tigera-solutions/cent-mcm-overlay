@@ -44,8 +44,11 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
   done;
 
   # set availability zones for CLUSTER2
+  # NOTE: us-east-1e AZ does not support creating EKS control plane in it. It is better to avoid setting that AZ in EKS cluster configuration when creating the cluster.
   indx=0
-  for az in $(aws ec2 describe-availability-zones --region $CLUSTER2_REGION --query '*[].ZoneName' --output text); do
+  CLUSTER2_AZ_ARR=($(aws ec2 describe-availability-zones --region $CLUSTER2_REGION --query '*[].ZoneName' --output text))
+  # use only first 4 AZs from the array
+  for az in ${CLUSTER2_AZ_ARR[@]:0:4}; do
     if [[ $indx == 0 ]]; then 
       CLUSTER2_AZ_LIST="\"$az\""
     else
