@@ -17,9 +17,11 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 - Set `CLUSTER1_REGION` and `CLUSTER2_REGION` variables that will be used to set regions in which you want to build EKS clusters
 
   ```bash
+  CLUSTER1_NAME=cc-eks-mcm1
+  CLUSTER2_NAME=cc-eks-mcm2
   CLUSTER1_REGION=ca-central-1
   CLUSTER2_REGION=us-east-1
-  EKS_VERSION=1.31
+  EKS_VERSION=1.33
   ```
 
 - Check available `availability zones` for the regions you plan to build clusters in
@@ -67,13 +69,15 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 - Create the cluster in the desired region:
 
   ```bash
-  sed -e "s/\${CLUSTER_REGION}/${CLUSTER1_REGION}/g" -e "s/\${EKS_VERSION}/${EKS_VERSION}/g" -e "s/\${CLUSTER_AZS}/${CLUSTER1_AZ_LIST}/g" manifests/eksctl-config-cluster1.yaml | eksctl create cluster -f-
+  sed -e "s/\${CLUSTER_NAME}/${CLUSTER1_NAME}/g" -e "s/\${CLUSTER_REGION}/${CLUSTER1_REGION}/g" -e "s/\${EKS_VERSION}/${EKS_VERSION}/g" -e "s/\${CLUSTER_AZS}/${CLUSTER1_AZ_LIST}/g" manifests/eksctl-config-cluster1.yaml | eksctl create cluster -f-
   ```
 
-- Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset:
+- Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset if it is deployed:
   
   ```bash
-  kubectl delete daemonset -n kube-system aws-node
+  # check if aws-node daemonset is deployed, and if so, delete it
+  AWS_NODE_CHECK=$(kubectl get daemonset -n kube-system -ojsonpath='{.items[?(@.metadata.name=="aws-node")].metadata.name}')
+  if [ ! -z $AWS_NODE_CHECK ]; then kubectl delete daemonset -n kube-system aws-node; fi
   ```
 
 ### Cluster-2 initial setup with ```eksctl```
@@ -85,13 +89,15 @@ Following steps are done for a 2-cluster setup using eksctl from a config file
 - Create the cluster in the desired region:
 
   ```bash
-  sed -e "s/\${CLUSTER_REGION}/${CLUSTER2_REGION}/g" -e "s/\${EKS_VERSION}/${EKS_VERSION}/g" -e "s/\${CLUSTER_AZS}/${CLUSTER2_AZ_LIST}/g" manifests/eksctl-config-cluster2.yaml | eksctl create cluster -f-
+  sed -e "s/\${CLUSTER_NAME}/${CLUSTER2_NAME}/g" -e "s/\${CLUSTER_REGION}/${CLUSTER2_REGION}/g" -e "s/\${EKS_VERSION}/${EKS_VERSION}/g" -e "s/\${CLUSTER_AZS}/${CLUSTER2_AZ_LIST}/g" manifests/eksctl-config-cluster2.yaml | eksctl create cluster -f-
   ```
   
-- Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset:
+- Once the cluster is up and you have ```kubectl``` access, delete the ```aws-node``` daemonset if it is deployed:
   
   ```bash
-  kubectl delete daemonset -n kube-system aws-node
+  # check if aws-node daemonset is deployed, and if so, delete it
+  AWS_NODE_CHECK=$(kubectl get daemonset -n kube-system -ojsonpath='{.items[?(@.metadata.name=="aws-node")].metadata.name}')
+  if [ ! -z $AWS_NODE_CHECK ]; then kubectl delete daemonset -n kube-system aws-node; fi
   ```
   
 - The next step is to prepare the clusters for installing Calico Cloud or Enterprise:

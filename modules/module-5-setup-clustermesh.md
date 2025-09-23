@@ -71,7 +71,7 @@ chroot /host
 
 ```bash
 cd /usr/local/bin
-curl -o calicoq -O -L https://downloads.tigera.io/ee/binaries/v3.21.0-1.0/calicoq
+curl -o calicoq -O -L https://downloads.tigera.io/ee/binaries/v3.22.0-1.0/calicoq
 chmod +x calicoq
 ```
 

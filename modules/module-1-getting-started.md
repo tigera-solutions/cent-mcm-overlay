@@ -47,10 +47,10 @@ The following are the basic requirements to get going.
      Linux installation:
 
      ```bash
-     curl https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.9/2024-01-04/bin/linux/amd64/kubectl -o /tmp/kubectl
+     curl https://s3.us-west-2.amazonaws.com/amazon-eks/1.33.5/2025-09-19/bin/darwin/amd64/kubectl -o /tmp/kubectl
      sudo chmod +x /tmp/kubectl
      sudo mv /tmp/kubectl /usr/local/bin
-     kubectl version --short --client
+     kubectl version --client
      ```
 
    - git and Ncat
@@ -80,7 +80,7 @@ The following are the basic requirements to get going.
      Download the k9s_Linux_x68_64.tar.gz file from the k9s github repo
 
      ```bash
-     curl --silent --location "https://github.com/derailed/k9s/releases/download/v0.31.9/k9s_Linux_amd64.tar.gz" | tar xz -C /tmp
+     curl --silent --location "https://github.com/derailed/k9s/releases/download/v0.50.12/k9s_Linux_amd64.tar.gz" | tar xz -C /tmp
      sudo mv /tmp/k9s /usr/local/bin
      k9s version
      ```

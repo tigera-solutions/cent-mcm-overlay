@@ -15,6 +15,8 @@
   ```bash
   CLUSTER1_NAME=cc-eks-mcm1
   CLUSTER2_NAME=cc-eks-mcm2
+  CLUSTER1_REGION=ca-central-1
+  CLUSTER2_REGION=us-east-1
   NODE_TYPE="t3.large"
   ```
 
@@ -22,23 +24,19 @@
 
 - Install the Tigera OSS operator manifest:
 
-  ```kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml```
+  ```bash
+  kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/operator-crds.yaml
+  kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/tigera-operator.yaml
+  ```
 
 - Modify the the Calico Installation CR file as needed with the correct pod CIDR, then install it for cluster-1:
   
   ```kubectl create -f manifests/cc-cluster-1-calico-installation.yaml```
 
-- Set variables
-
-  ```bash
-  CLUSTERNAME=cc-eks-mcm1
-  CLUSTER1_REGION=ca-central-1
-  ```
-
 - Add worker nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-1.yaml``` file:
 
   ```bash
-  eksctl create nodegroup --cluster $CLUSTER1_NAME --region $CLUSTER1_REGION --node-type $NODE_TYPE --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 2
+  eksctl create nodegroup --cluster $CLUSTER1_NAME --region $CLUSTER1_REGION --node-type $NODE_TYPE --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 0
   ```
 
 - Once EKS has added the worker nodes to the cluster and the output of ```kubectl get nodes``` shows the nodes as available, monitor progress of all the pods as well as the output of ```kubectl get tigerastatus``` and ensure that the ```apiserver``` status shows ```Available```
@@ -51,7 +49,10 @@
 
 - Install the Tigera OSS operator manifest:
 
-  ```kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.2/manifests/tigera-operator.yaml```
+  ```bassh
+  kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/operator-crds.yaml
+  kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/tigera-operator.yaml
+  ```
 
 - Modify the the Calico Installation CR file as needed with the correct pod CIDR, then install it for cluster-1:
   
@@ -60,7 +61,7 @@
 - Add worker nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-1.yaml``` file:
 
     ```bash
-  eksctl create nodegroup --cluster $CLUSTER2_NAME --region $CLUSTER2_REGION --node-type $NODE_TYPE --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 2
+  eksctl create nodegroup --cluster $CLUSTER2_NAME --region $CLUSTER2_REGION --node-type $NODE_TYPE --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 0
   ```
 
 - Once EKS has added the worker nodes to the cluster and the output of ```kubectl get nodes``` shows the nodes as available, monitor progress of all the pods as well as the output of ```kubectl get tigerastatus``` and ensure that the ```apiserver``` status shows ```Available```

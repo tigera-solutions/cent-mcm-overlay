@@ -3,7 +3,7 @@ kind: ClusterConfig
 availabilityZones: [${CLUSTER_AZS}]
 
 metadata:
-  name: cc-eks-mcm2
+  name: ${CLUSTER_NAME} # e.g. cc-eks-mcm2
   region: ${CLUSTER_REGION}
   version: "${EKS_VERSION}"
 
