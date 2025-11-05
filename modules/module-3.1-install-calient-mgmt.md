@@ -11,31 +11,20 @@
 - Apply the operator and prometheus manifests from the repo:
 
   ```bash
-  kubectl create -f https://downloads.tigera.io/ee/v3.21.0-1.0/manifests/tigera-operator.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.21.2/manifests/operator-crds.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.21.2/manifests/tigera-operator.yaml
   ```
 
   ```bash
-  kubectl create -f https://downloads.tigera.io/ee/v3.21.0-1.0/manifests/tigera-prometheus-operator.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.21.2/manifests/tigera-prometheus-operator.yaml
   ```
 
-- Get a pull secret: The official build uses the quay.io images, so you'll need a pull secret.
-
-> :warning: **Please make sure to delete pull secrets after testing or if not being used by an active/paying customer or an active POC**
+- Get a pull secret and a license for Calico Enterprise from the Tigera team.
 
 - Install the pull secret:
   
   ```bash
   kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-operator --from-file=.dockerconfigjson=<path/to/pull/secret>
-  ```
-
-- For the Prometheus operator, create the pull secret in the tigera-prometheus namespace and then patch the deployment
-
-  ```bash
-  kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-prometheus --from-file=.dockerconfigjson=<path/to/pull/secret>
-  ```
-
-  ```bash
-  kubectl patch deployment -n tigera-prometheus calico-prometheus-operator -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name": "tigera-pull-secret"}]}}}}'
   ```
 
 - Modify the ```mgmtcluster-custom-resources-example.yaml``` file as needed and apply it.
@@ -98,9 +87,9 @@ EOF
   kubectl create -f manifests/mgmt-cluster-lb.yaml
   ```
   
-- Configure user access to the manager UI with the docs [here](https://docs.tigera.io/calico-enterprise/next/operations/cnx/access-the-manager)
+- Configure user access to the manager UI with the docs [here](https://docs.tigera.io/calico-enterprise/latest/operations/cnx/access-the-manager)
 
-- Create the mgmt cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/create-a-management-cluster)
+- Create the mgmt cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/set-up-multi-cluster-management/standard-install/create-a-management-cluster)
 
   An example of using another ```LoadBalancer``` svc to expose the MCM ```targetport``` of 9449 and using that for the managed cluster to access is at ```manifests/mcm-svc-lb.yaml```:
 
@@ -134,29 +123,20 @@ EOF
 - Apply the operator and prometheus manifests from the repo:
 
   ```bash
-  kubectl create -f https://downloads.tigera.io/ee/v3.18.0-2.0/manifests/tigera-operator.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.21.2/manifests/operator-crds.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.21.2/manifests/tigera-operator.yaml
   ```
 
   ```bash
-  kubectl create -f https://downloads.tigera.io/ee/v3.18.0-2.0/manifests/tigera-prometheus-operator.yaml
+  kubectl create -f https://downloads.tigera.io/ee/v3.21.2/manifests/tigera-prometheus-operator.yaml
   ```
 
-- Get a pull secret: The official build uses the quay.io images, so you'll need a pull secret. [This doc](https://tigera.atlassian.net/wiki/spaces/CS/pages/623575278/Creating+Pull+secrets+and+License+files+for+PoC+s) has options on how to generate one as per the official POC/testing process.
+- Get a pull secret and a license for Calico Enterprise from Tigera team.
 
 - Install the pull secret:
   
   ```bash
   kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-operator --from-file=.dockerconfigjson=<path/to/pull/secret>
-  ```
-
-- For the Prometheus operator, create the pull secret in the tigera-prometheus namespace and then patch the deployment
-
-  ```bash
-  kubectl create secret generic tigera-pull-secret --type=kubernetes.io/dockerconfigjson -n tigera-prometheus --from-file=.dockerconfigjson=<path/to/pull/secret>
-  ```
-
-  ```bash
-  kubectl patch deployment -n tigera-prometheus calico-prometheus-operator -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name": "tigera-pull-secret"}]}}}}'
   ```
 
 - Modify the ```managedcluster-custom-resources-example.yaml``` file as needed and apply it. In this case cluster-2 will be added to cluster-1 as a managed cluster so we omit all necessary components in the resources file, but ensure pod cidr is unique in the ```Installation``` resource.
@@ -165,7 +145,7 @@ EOF
   kubectl create -f manifests/managedcluster-custom-resources-example.yaml
   ```
 
-- Add worker nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-1.yaml``` file:
+- Add worker nodes to the cluster using the values for the clustername and region as used from the ```eksctl-config-cluster-2.yaml``` file:
   
   ```bash
   eksctl create nodegroup --cluster <cluster_name> --region <region> --node-type <node_type> --max-pods-per-node 100 --nodes 2 --nodes-max 3 --nodes-min 2
@@ -173,7 +153,7 @@ EOF
 
 - Once EKS has added the worker nodes to the cluster and the output of ```kubectl get nodes``` shows the nodes as available, monitor progress of all the pods as well as the output of ```kubectl get tigerastatus``` and once ```apiserver``` status shows ```Available```, proceed to the next step.
   
-- Create the managed cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/create-a-managed-cluster#create-the-connection-manifest-for-your-managed-cluster)
+- Create the managed cluster resources as per the [docs here](https://docs.tigera.io/calico-enterprise/latest/multicluster/set-up-multi-cluster-management/standard-install/create-a-managed-cluster)
 
 [:arrow_right: Module 4 - Setup VPC Peering](module-4-setup-vpcpeering.md)  
 [:arrow_left: Module 2 - Deploy the EKS Clusters](module-2-deploy-eks.md)  
